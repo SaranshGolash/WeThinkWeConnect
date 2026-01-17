@@ -17,7 +17,7 @@ const server = http.createServer(app);
 
 // Middleware
 const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:5173',
+  process.env.CLIENT_URL || 'https://we-think-we-connect-client.vercel.app/' || 'http://localhost:5173',
   'http://localhost:5173',
   'http://localhost:3000'
 ].filter(Boolean);
