@@ -1,75 +1,51 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import PostInput from './PostInput';
+import ThoughtCard from './ThoughtCard';
+// import api from '../../api/axios'; // Assumption: axios instance exists
 
 const Feed = () => {
   const [thoughts, setThoughts] = useState([]);
-  const [input, setInput] = useState("");
 
-  // Fetch thoughts on load
+  // Mock Data Fetch
   useEffect(() => {
-    const fetchThoughts = async () => {
-      try {
-        setThoughts([
-          { id: 1, username: 'saransh', content: 'I feel like learning coding is actually making me less creative because...', continuations: 2 },
-          { id: 2, username: 'anon', content: 'Friendship in 2026 feels transactional, almost like...', continuations: 5 }
-        ]);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchThoughts();
+    // In real app: const res = await api.get('/thoughts');
+    const mockData = [
+      { id: 1, username: 'saransh', content: 'I feel like we optimize for speed but lose meaning because', created_at: '2023-10-24', continuations: 4 },
+      { id: 2, username: 'dev_guru', content: 'React hooks are great but sometimes I miss classes when', created_at: '2023-10-25', continuations: 12 },
+      { id: 3, username: 'philosopher', content: 'Silence is not empty, it is actually full of', created_at: '2023-10-26', continuations: 8 },
+    ];
+    setThoughts(mockData);
   }, []);
 
+  const handleNewPost = (content) => {
+    const newThought = {
+      id: Date.now(),
+      username: 'me', // Replace with Auth Context user
+      content,
+      created_at: new Date().toISOString(),
+      continuations: 0
+    };
+    setThoughts([newThought, ...thoughts]);
+  };
+
   return (
-    <div>
-      {/* Input Area */}
-      <div className="mb-12 bg-surface p-6 rounded-lg border border-white/5 shadow-xl">
-        <label className="text-fog text-xs font-bold tracking-widest uppercase mb-2 block">
-          Start an incomplete thought
-        </label>
-        <textarea
-          className="w-full bg-black/20 text-white text-lg font-serif p-4 rounded focus:outline-none focus:ring-1 focus:ring-fog resize-none placeholder-gray-600"
-          rows="2"
-          placeholder="I have been wondering if..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
-        <div className="flex justify-between items-center mt-4">
-          <span className="text-xs text-gray-500">No conclusions allowed.</span>
-          <button className="bg-fog text-black font-bold px-6 py-2 rounded hover:bg-white transition">
-            Release
-          </button>
-        </div>
+    <div className="max-w-2xl mx-auto py-8">
+      <div className="mb-12 text-center md:text-left">
+        <h1 className="text-3xl font-bold text-white mb-2">Unfinished Thoughts</h1>
+        <p className="text-gray-400 text-sm">A place where no sentence ever ends.</p>
       </div>
 
-      {/* The Feed */}
-      <div className="space-y-6">
-        {thoughts.map((t) => (
-          <div key={t.id} className="group relative pl-8 border-l-2 border-gray-700 hover:border-fog transition-colors duration-300">
-            {/* Design Element: Little dot on the timeline */}
-            <div className="absolute -left-[9px] top-0 w-4 h-4 bg-background border-2 border-gray-700 rounded-full group-hover:border-fog transition-colors" />
-            
-            <div className="mb-2 flex items-center gap-2">
-              <span className="text-xs text-gray-400 font-mono">@{t.username}</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-gray-400">
-                {t.status || 'incomplete'}
-              </span>
-            </div>
-            
-            <p className="text-xl font-serif text-gray-200 leading-relaxed italic opacity-90 group-hover:opacity-100">
-              "{t.content}..."
-            </p>
+      <PostInput onSubmit={handleNewPost} />
 
-            <div className="mt-4 flex gap-4 opacity-50 group-hover:opacity-100 transition-opacity">
-              <button className="text-xs font-bold text-fog hover:underline">
-                Extend ({t.continuations})
-              </button>
-              <button className="text-xs font-bold text-gray-400 hover:text-white">
-                Clarify
-              </button>
-            </div>
-          </div>
+      <div className="space-y-4">
+        {thoughts.map((thought) => (
+          <ThoughtCard key={thought.id} thought={thought} />
         ))}
+      </div>
+      
+      {/* "Load More" Spacer */}
+      <div className="h-20 flex items-center justify-center text-gray-600 text-sm font-mono mt-10">
+        ~ End of known thoughts ~
       </div>
     </div>
   );
