@@ -1,56 +1,41 @@
 const express = require('express');
 const http = require('http');
-const { Server } = require('socket.io');
 const cors = require('cors');
-const pool = require('./db');
+const { Server } = require('socket.io');
+require('dotenv').config();
+
+// Routes
+const authRoutes = require('./routes/authRoutes');
+const thoughtRoutes = require('./routes/thoughtRoutes');
+
+// Socket Logic
+const socketManager = require('./sockets/socketManager');
 
 const app = express();
+const server = http.createServer(app);
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-const server = http.createServer(app);
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/thoughts', thoughtRoutes);
+// app.use('/api/users', userRoutes); // Add later
+
+// Socket.io Setup
 const io = new Server(server, {
-    cors: { origin: "http://localhost:3000", methods: ["GET", "POST"] }
-});
-
-// --- UseCase 1: REST API for "Unfinished" ---
-// Check if thought is a conclusion (Mock AI check)
-const isConclusion = (text) => {
-    const conclusions = ["therefore", "in conclusion", "so", "proven"];
-    return conclusions.some(word => text.toLowerCase().includes(word));
-};
-
-app.post('/api/thoughts', async (req, res) => {
-    const { userId, content } = req.body;
-    if (isConclusion(content)) {
-        return res.status(400).json({ error: "No conclusions allowed. Keep it open." });
+    cors: {
+        origin: "http://localhost:3000", // Allow React Frontend
+        methods: ["GET", "POST"]
     }
-    // ... Insert into DB code ...
 });
 
+// Initialize Socket Manager
+socketManager(io);
 
-// --- MODULE 2 & 3: WebSockets for "EchoSwap" & "Middle Ground" ---
-io.on('connection', (socket) => {
-    console.log(`User Connected: ${socket.id}`);
+const PORT = process.env.PORT || 5000;
 
-    // Join a specific room (Echo or Conflict)
-    socket.on('join_room', (data) => {
-        socket.join(data.roomId);
-    });
-
-    // EchoSwap: Perspective Validation
-    socket.on('echo_attempt', (data) => {
-        // Data contains { roomId, originalUserId, attemptText }
-        // Broadcast to the other user to Valid/Invalidate
-        socket.to(data.roomId).emit('verify_perspective', data);
-    });
-
-    // Middle Ground: Update Distance
-    socket.on('update_position', (data) => {
-        // data contains { roomId, newDistance, sliderValue }
-        // If distance decreases, unlock chat
-        socket.to(data.roomId).emit('opponent_moved', data);
-    });
+server.listen(PORT, () => {
+    console.log(`Continuum Server running on port ${PORT}`);
 });
-
-server.listen(5000, () => console.log('Server running on port 5000'));
