@@ -3,13 +3,15 @@ import PostInput from './PostInput';
 import ThoughtCard from './ThoughtCard';
 import api from '../../api/axios';
 import { ENDPOINTS } from '../../api/endpoints';
+import ThreadExpansion from './ThreadExpansion';
 
 const Feed = () => {
   const [thoughts, setThoughts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeThread, setActiveThread] = useState(null);
 
-  // 1. Fetch thoughts on load
+  // Fetches thoughts on load
   useEffect(() => {
     const fetchThoughts = async () => {
       try {
@@ -25,9 +27,9 @@ const Feed = () => {
     fetchThoughts();
   }, []);
 
-  // 2. Handle the success callback from PostInput
+  // Handles the success callback from PostInput
   const handleNewPost = (newThought) => {
-    // Add the new thought to the TOP of the list immediately
+    // Adds the new thought to the TOP of the list immediately
     setThoughts((prev) => [newThought, ...prev]);
   };
 
@@ -44,13 +46,12 @@ const Feed = () => {
           A stream of consciousness. No conclusions allowed.
         </p>
       </div>
-
-      {/* --- FIX: Pass 'onPostSuccess' correctly --- */}
+      
       <PostInput onPostSuccess={handleNewPost} />
 
       <div className="space-y-6">
         {thoughts.map((thought) => (
-          <ThoughtCard key={thought.id} thought={thought} />
+          <ThoughtCard key={thought.id} thought={thought} onExtend={() => setActiveThread(thought)}/>
         ))}
         
         {thoughts.length === 0 && (
@@ -63,6 +64,7 @@ const Feed = () => {
       <div className="h-20 flex items-center justify-center text-gray-700 text-xs font-mono mt-10 uppercase tracking-widest">
         ~ End of known thoughts ~
       </div>
+      {activeThread && (<ThreadExpansion rootPost={activeThread} onClose={() => setActiveThread(null)}/>)}
     </div>
   );
 };

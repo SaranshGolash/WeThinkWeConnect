@@ -1,9 +1,8 @@
 const pool = require("../config/db");
 
-// 1. Get Current User Profile (Protected)
+// Get Current User Profile (Protected)
 exports.getProfile = async (req, res) => {
     try {
-        // req.user.id comes from authMiddleware
         const user = await pool.query(
             "SELECT id, username, email, reputation_score, created_at FROM users WHERE id = $1",
             [req.user.id]
@@ -20,18 +19,18 @@ exports.getProfile = async (req, res) => {
     }
 };
 
-// 2. Get User Dashboard Data (Aggregates Activity)
+// Get User Dashboard Data
 exports.getDashboard = async (req, res) => {
     try {
         const userId = req.user.id;
 
-        // A. Fetch their unfinished thoughts
+        // Fetch user's unfinished thoughts
         const thoughts = await pool.query(
             "SELECT * FROM thoughts WHERE user_id = $1 ORDER BY created_at DESC LIMIT 5",
             [userId]
         );
 
-        // B. Fetch active EchoSwap sessions
+        // Fetch active EchoSwap sessions
         const echoSessions = await pool.query(
             `SELECT * FROM swap_sessions 
              WHERE (user_a_id = $1 OR user_b_id = $1) 
@@ -39,7 +38,7 @@ exports.getDashboard = async (req, res) => {
             [userId]
         );
 
-        // C. Fetch active Conflict Rooms
+        // Fetch active Conflict Rooms
         const conflicts = await pool.query(
             `SELECT * FROM conflict_rooms 
              WHERE (user_a_id = $1 OR user_b_id = $1) 
@@ -59,7 +58,7 @@ exports.getDashboard = async (req, res) => {
     }
 };
 
-// 3. Get Public Profile (By Username) - For viewing others
+// Public Profile
 exports.getPublicProfile = async (req, res) => {
     try {
         const { username } = req.params;
@@ -73,7 +72,7 @@ exports.getPublicProfile = async (req, res) => {
             return res.status(404).json("User not found");
         }
 
-        // Get their top stats (e.g., number of helpful continuations)
+        // Get user's top stats
         const stats = await pool.query(
             "SELECT COUNT(*) as helpful_count FROM continuations WHERE user_id = $1 AND is_chosen_best = TRUE",
             [user.rows[0].id]

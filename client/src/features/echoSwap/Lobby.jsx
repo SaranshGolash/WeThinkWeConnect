@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { useSocket } from '../../hooks/useSocket'; // Assumption: You have this hook
-
 const Lobby = () => {
   const navigate = useNavigate();
-  // const socket = useSocket(); 
   const [topic, setTopic] = useState('');
   const [isSearching, setIsSearching] = useState(false);
 
@@ -12,14 +9,8 @@ const Lobby = () => {
     if (!topic.trim()) return;
     
     setIsSearching(true);
-    
-    // Simulate Socket Emission
     console.log("Emitting: find_match", { mode: 'echo', topic });
-    // socket.emit('find_match', { mode: 'echo', topic });
-
-    // Mocking a match found after 2 seconds for UI demo
     setTimeout(() => {
-        // In real app, socket listener triggers this navigation
         navigate('/echo/session', { state: { role: 'listener', topic: topic } }); 
     }, 2000);
   };
@@ -41,7 +32,6 @@ const Lobby = () => {
       {/* Input Section */}
       <div className="w-full max-w-xl bg-surface p-8 rounded-2xl border border-white/10 shadow-2xl relative overflow-hidden">
         
-        {/* Loading Overlay */}
         {isSearching && (
           <div className="absolute inset-0 bg-surface/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
             <div className="w-12 h-12 border-4 border-echo-a border-t-transparent rounded-full animate-spin mb-4"></div>
@@ -71,7 +61,6 @@ const Lobby = () => {
         </button>
       </div>
 
-      {/* Footer Note */}
       <p className="mt-8 text-xs text-gray-600 font-mono">
         *Sessions last 5 minutes. Rudeness results in an immediate ban.
       </p>

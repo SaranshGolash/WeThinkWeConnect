@@ -5,7 +5,7 @@ module.exports = {
     addToQueue: (socketId, userId, mode, topic) => {
         const queue = mode === 'echo' ? echoQueue : conflictQueue;
         
-        // Check if someone else is waiting with a similar topic (simplified)
+        // Check if someone else is waiting with a similar topic
         const matchIndex = queue.findIndex(u => u.userId !== userId); // Just match next available for now
 
         if (matchIndex !== -1) {

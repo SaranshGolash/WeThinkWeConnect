@@ -12,9 +12,6 @@ const useSocket = () => {
   const socket = useContext(SocketContext);
 
   if (socket === undefined) {
-    // Safety check in case you forgot to wrap App in the Provider
-    // Ideally, we return null initially until connection is established, 
-    // but throwing helps catch setup errors during dev.
     console.warn("useSocket must be used within a SocketProvider. Socket is currently undefined.");
   }
 

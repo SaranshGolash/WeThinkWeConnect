@@ -5,9 +5,9 @@ const Button = ({
   children, 
   variant = 'primary', 
   className = '', 
-  isLoading = false, // 1. Extract isLoading here
-  to,                // 2. Extract 'to' here so it doesn't go to the button
-  ...props           // 3. 'props' now contains everything ELSE (like onClick, type, etc)
+  isLoading = false,
+  to,
+  ...props
 }) => {
   
   const baseStyle = "relative inline-flex items-center justify-center px-8 py-4 rounded-xl font-bold transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden";
@@ -49,7 +49,7 @@ const Button = ({
     <button 
       className={combinedClass} 
       disabled={isLoading || props.disabled} 
-      {...props} // Now safe to spread because isLoading is removed
+      {...props}
     >
       {content}
     </button>

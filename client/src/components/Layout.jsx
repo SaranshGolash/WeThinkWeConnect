@@ -5,8 +5,6 @@ import Footer from './ui/Footer';
 const Layout = ({ children }) => {
   return (
     <div className="flex flex-col min-h-screen relative overflow-x-hidden selection:bg-primary selection:text-white">
-      
-      {/* Navbar sits on top */}
       <Navbar />
 
       {/* Main Content */}
@@ -14,7 +12,6 @@ const Layout = ({ children }) => {
         {children}
       </main>
 
-      {/* The New Footer */}
       <Footer /> 
     </div>
   );

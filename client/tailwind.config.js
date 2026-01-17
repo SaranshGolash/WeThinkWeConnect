@@ -24,7 +24,7 @@ export default {
         },
         fontFamily: {
           sans: ['Inter', 'system-ui', 'sans-serif'],
-          display: ['Space Grotesk', 'Inter', 'sans-serif'], // You can add this font in index.html later if you want
+          display: ['Space Grotesk', 'Inter', 'sans-serif'],
         },
         backgroundImage: {
           'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

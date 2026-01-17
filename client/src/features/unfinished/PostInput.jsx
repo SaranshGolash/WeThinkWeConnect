@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Button from '../../components/ui/Button';
-import api from '../../api/axios'; // We call the API directly here to catch errors
+import api from '../../api/axios';
 import { ENDPOINTS } from '../../api/endpoints';
 
 const PostInput = ({ onPostSuccess }) => {
@@ -16,26 +16,19 @@ const PostInput = ({ onPostSuccess }) => {
     setAiError(null);
 
     try {
-      // 1. Send to Backend (which calls Gemini)
       const res = await api.post(ENDPOINTS.THOUGHTS.CREATE, { content: text });
-      
-      // 2. Success!
       onPostSuccess(res.data);
       setText("");
     } catch (err) {
-  console.error("FULL ERROR DETAILS:", err); // <--- Check your Browser Console for this!
+  console.error("FULL ERROR DETAILS:", err);
   
-  // improved error extraction
   let msg = "Something went wrong.";
   
   if (err.response) {
-      // The server responded with a status code other than 2xx
       console.log("Server Data:", err.response.data);
       console.log("Server Status:", err.response.status);
       
-      // Handle both { error: "msg" } and plain text responses
       msg = err.response.data?.error || err.response.data || "Server Error";
-      
       if (typeof msg === 'object') msg = JSON.stringify(msg);
   } else if (err.request) {
       msg = "No response from server. Is the backend running?";

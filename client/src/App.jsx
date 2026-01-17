@@ -27,12 +27,12 @@ function App() {
       <SocketProvider>
         <Layout>
           <Routes>
-            {/* --- PUBLIC ROUTES --- */}
+            {/* Public Routes */}
             <Route path={ROUTES.HOME} element={<LandingPage />} />
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
             <Route path={ROUTES.REGISTER} element={<LoginPage />} />
 
-            {/* --- PROTECTED ROUTES --- */}
+            {/* Protected Routes */}
             
             {/* Dashboard */}
             <Route 
@@ -67,7 +67,6 @@ function App() {
               path={ROUTES.ECHOSWAP_SESSION} 
               element={
                 <PrivateRoute>
-                  {/* Now this component can successfully call useSocket() */}
                   <SplitScreenSession />
                 </PrivateRoute>
               } 

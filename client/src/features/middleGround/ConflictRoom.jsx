@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ConvergenceSlider from './ConvergenceSlider';
 import NegotiationChat from './NegotiationChat';
-// import { useSocket } from '../../hooks/useSocket';
 
 const ConflictRoom = () => {
   // State
@@ -11,16 +10,13 @@ const ConflictRoom = () => {
   // Logic
   const isUnlocked = distance < 20;
 
-  // Mock Socket Logic (Replace with useSocket hook)
   const handleDistanceChange = (newDist) => {
     setDistance(newDist);
-    // socket.emit('conflict_update_position', { newDistance: newDist });
   };
 
   const handleSendMessage = (text) => {
     const newMessage = { text, isMe: true };
     setMessages((prev) => [...prev, newMessage]);
-    // socket.emit('conflict_send_message', newMessage);
   };
 
   return (

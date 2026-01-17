@@ -38,7 +38,7 @@ const SplitScreenSession = () => {
   }, [socket]);
 
   const handlePerspectiveSubmit = (text) => {
-    // Double-check: This should rarely fire now because we hide the UI if !socket
+    // safe case for socket connection
     if (!socket) {
       console.warn("Socket not ready yet.");
       return;
@@ -54,7 +54,7 @@ const SplitScreenSession = () => {
   return (
     <div className="h-[calc(100vh-140px)] w-full flex flex-col md:flex-row rounded-3xl overflow-hidden border border-white/10 shadow-2xl relative bg-black">
       
-      {/* LEFT PANEL */}
+      {/* Left Pannel */}
       <div className="md:w-1/2 bg-surface p-10 flex flex-col justify-center items-center text-center border-b md:border-b-0 md:border-r border-white/5 relative">
         <span className="absolute top-6 left-6 text-xs font-bold text-secondary tracking-[0.3em] opacity-50 uppercase">
           Target Belief
@@ -68,20 +68,19 @@ const SplitScreenSession = () => {
         </div>
       </div>
 
-      {/* RIGHT PANEL */}
+      {/* Right Pannel */}
       <div className="md:w-1/2 bg-black/50 flex flex-col relative">
         <span className="absolute top-6 right-6 text-xs font-bold text-primary tracking-[0.3em] opacity-50 uppercase">
           Your Mirror
         </span>
 
-        {/* 1. CHECK SOCKET CONNECTION FIRST */}
+        {/* Socket Connection Check */}
         {!socket ? (
           <div className="h-full flex flex-col items-center justify-center animate-pulse">
             <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin mb-4"/>
             <p className="text-white/50 text-sm tracking-widest uppercase">Connecting to Neural Link...</p>
           </div>
         ) : status === 'success' ? (
-          /* 2. SUCCESS STATE */
           <div className="h-full flex flex-col items-center justify-center p-10 animate-fade-in">
             <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6 text-green-400 text-4xl shadow-glow-echo">
               ✓
@@ -92,7 +91,6 @@ const SplitScreenSession = () => {
             </p>
           </div>
         ) : (
-          /* 3. INPUT FORM (Only renders if socket exists) */
           <PerspectiveInput 
             onSubmit={handlePerspectiveSubmit} 
             isProcessing={status === 'processing'}

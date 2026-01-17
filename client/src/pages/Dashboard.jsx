@@ -29,7 +29,7 @@ const Dashboard = () => {
   return (
     <div className="space-y-8 animate-fade-in">
       
-      {/* HEADER STATS */}
+      {/* Header*/}
       <div className="flex flex-col md:flex-row items-center gap-6 bg-surface/30 p-8 rounded-2xl border border-white/5">
         <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
           {user?.username?.charAt(0).toUpperCase()}
@@ -44,10 +44,10 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* DASHBOARD GRID */}
+      {/* Dashboard Grid */}
       <div className="grid md:grid-cols-2 gap-6">
         
-        {/* COLUMN 1: YOUR THOUGHTS */}
+        {/* Column 1: YOUR THOUGHTS */}
         <section>
           <h3 className="text-white font-bold mb-4 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-fog"></span>
@@ -71,7 +71,7 @@ const Dashboard = () => {
           </div>
         </section>
 
-        {/* COLUMN 2: ACTIVE SESSIONS */}
+        {/* Column 2: ACTIVE SESSIONS */}
         <section>
           <h3 className="text-white font-bold mb-4 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-echo-a"></span>

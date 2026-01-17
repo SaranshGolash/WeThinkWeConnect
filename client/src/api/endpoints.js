@@ -6,14 +6,13 @@ export const ENDPOINTS = {
     THOUGHTS: {
       GET_FEED: '/thoughts',
       CREATE: '/thoughts',
-      EXTEND: (id) => `/thoughts/${id}/extend`, // Dynamic endpoint example
+      EXTEND: (id) => `/thoughts/${id}/extend`,
     },
     USERS: {
       PROFILE: '/users/profile',
       DASHBOARD: '/users/dashboard',
       PUBLIC_PROFILE: (username) => `/users/${username}`,
     },
-    // Socket events aren't HTTP endpoints, but you can list event names here if you want
     SOCKET: {
       CONNECT: 'connect',
       JOIN_ROOM: 'join_room',

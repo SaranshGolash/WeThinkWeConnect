@@ -39,7 +39,7 @@ const LandingPage = () => {
       {/* The Grid */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
         
-        {/* Module 1 */}
+        {/* UseCase 1 */}
         <Card className="h-full">
           <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mb-6 text-2xl">
             ☁️
@@ -53,7 +53,7 @@ const LandingPage = () => {
           </Link>
         </Card>
 
-        {/* Module 2 */}
+        {/* UseCase 2 */}
         <Card className="h-full">
           <div className="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center mb-6 text-2xl">
             🔄
@@ -67,7 +67,7 @@ const LandingPage = () => {
           </Link>
         </Card>
 
-        {/* Module 3 */}
+        {/* UseCase 3 */}
         <Card className="h-full">
           <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mb-6 text-2xl">
             ⚖️

@@ -35,9 +35,7 @@ module.exports = (io, socket) => {
             io.in(roomId).emit('echo_success', { 
                 msg: "Perspective Aligned. Chat Unlocked." 
             });
-            // Update DB status here...
         } else {
-            // Send specific feedback to the user who tried
             socket.emit('echo_failed', { 
                 msg: result.feedback 
             });

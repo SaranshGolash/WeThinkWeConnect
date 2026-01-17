@@ -1,8 +1,8 @@
 import React from 'react';
 
-const ThoughtCard = ({ thought }) => {
-  // SAFETY CHECK: Fallback if username or date is missing
-  const username = thought.username || "Anonymous";
+const ThoughtCard = ({ thought, onExtend }) => {
+  console.log("Thought Data:", thought);
+  const username = thought.author?.username || thought.username || "Anonymous";
   const initial = username.charAt(0).toUpperCase();
   const dateDisplay = thought.created_at 
     ? new Date(thought.created_at).toLocaleDateString() 
@@ -14,7 +14,6 @@ const ThoughtCard = ({ thought }) => {
       {/* Timeline Line */}
       <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-surface via-white/10 to-surface group-hover:via-primary transition-all duration-500" />
       
-      {/* Timeline Dot */}
       <div className="absolute left-[-4px] top-6 w-2 h-2 rounded-full bg-surface-highlight border border-white/10 group-hover:bg-primary group-hover:shadow-neon transition-all duration-300" />
 
       {/* Card Content */}
@@ -40,7 +39,7 @@ const ThoughtCard = ({ thought }) => {
 
           {/* Action Footer */}
           <div className="mt-6 flex gap-3 opacity-60 group-hover:opacity-100 transition-opacity">
-            <button className="flex items-center gap-2 px-3 py-1.5 rounded bg-white/5 hover:bg-primary hover:text-white text-xs font-bold transition">
+            <button onClick={onExtend} className="flex items-center gap-2 px-3 py-1.5 rounded bg-white/5 hover:bg-primary hover:text-white text-xs font-bold transition">
               <span>Extend Thread</span>
               <span className="bg-black/30 px-1.5 rounded text-[10px]">{thought.continuations || 0}</span>
             </button>

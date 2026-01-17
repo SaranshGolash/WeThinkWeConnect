@@ -17,16 +17,13 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
-          {/* Logo */}
           <Link to="/" className="text-2xl font-display font-bold text-white tracking-tighter">
             WeThink<span className="text-secondary">WeConnect</span>
           </Link>
-
-          {/* Right Side */}
           <div className="flex items-center gap-6">
             
             {user ? (
-              // IF LOGGED IN
+              // If logged in
               <>
                 <span className="hidden md:block text-sm text-gray-400">
                   Hello, {user.username || user.email?.split('@')[0]}
@@ -47,7 +44,7 @@ const Navbar = () => {
                 </button>
               </>
             ) : (
-              // IF NOT LOGGED IN
+              // If not logged in
               <Link 
                 to="/login"
                 className="px-6 py-2 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition"

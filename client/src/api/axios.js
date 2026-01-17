@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create the instance
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api', // Matches your Node server port
+  baseURL: 'http://localhost:5000/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -13,7 +13,6 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
-      // The backend middleware expects the header key to be 'token'
       config.headers['token'] = token; 
     }
     return config;
@@ -23,7 +22,7 @@ api.interceptors.request.use(
   }
 );
 
-// Response Interceptor: Global Error Handling (Optional)
+// Response Interceptor
 api.interceptors.response.use(
   (response) => response,
   (error) => {

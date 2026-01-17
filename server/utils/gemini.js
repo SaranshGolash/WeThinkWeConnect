@@ -6,7 +6,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-3-pro-preview" });
 
 const Gemini = {
-  // 1. UNFINISHED: Checks if a sentence is "open-ended"
+  // UNFINISHED: Checks if a sentence is "open-ended"
   checkIncompleteness: async (text) => {
     // Basic fallback if API Key is missing to prevent crashes
     if (!process.env.GEMINI_API_KEY) {
@@ -41,7 +41,7 @@ const Gemini = {
     }
   },
 
-  // 2. ECHOSWAP: Validates perspective taking
+  // ECHOSWAP: Validates perspective taking
   validatePerspective: async (originalBelief, attemptedRewrite) => {
     if (!process.env.GEMINI_API_KEY) return { pass: true };
 
