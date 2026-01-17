@@ -1,4 +1,6 @@
+// client/src/features/unfinished/PostInput.jsx
 import React, { useState } from 'react';
+import Button from '../../components/ui/Button';
 
 const PostInput = ({ onSubmit }) => {
   const [text, setText] = useState("");
@@ -6,10 +8,9 @@ const PostInput = ({ onSubmit }) => {
 
   const handleSubmit = () => {
     if (!text) return;
-    // Basic Client-side check for conclusions
-    const forbidden = ["conclude", "therefore", "period."];
+    const forbidden = ["conclude", "therefore", "period.", "simple as that"];
     if (forbidden.some(word => text.toLowerCase().includes(word))) {
-      alert("No conclusions allowed!");
+      alert("Let's keep it open-ended. Avoid conclusive words.");
       return;
     }
     onSubmit(text);
@@ -18,11 +19,12 @@ const PostInput = ({ onSubmit }) => {
 
   return (
     <div className={`
-      relative w-full mb-12 rounded-xl transition-all duration-500 border
-      ${isFocused ? 'bg-surface border-fog shadow-[0_0_30px_rgba(165,180,252,0.1)]' : 'bg-surface/50 border-white/5'}
+      relative w-full mb-12 rounded-2xl transition-all duration-500
+      ${isFocused ? 'bg-surface border-fog shadow-glow-fog' : 'bg-surface/30 border-white/5'}
+      border backdrop-blur-sm p-1
     `}>
       <div className="p-6">
-        <label className="block text-xs font-bold text-fog tracking-widest uppercase mb-4">
+        <label className={`block text-xs font-bold tracking-widest uppercase mb-4 transition-colors ${isFocused ? 'text-fog' : 'text-slate-500'}`}>
           Open a new loop
         </label>
         
@@ -31,25 +33,21 @@ const PostInput = ({ onSubmit }) => {
           onChange={(e) => setText(e.target.value)}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          className="w-full bg-transparent text-xl md:text-2xl font-serif text-gray-200 placeholder-gray-600 focus:outline-none resize-none leading-relaxed"
+          className="w-full bg-transparent text-xl md:text-2xl font-serif text-white placeholder-slate-600 focus:outline-none resize-none leading-relaxed"
           placeholder="I have a feeling that..."
           rows={3}
         />
       </div>
 
-      {/* Bottom Bar */}
-      <div className="px-6 py-4 bg-black/20 border-t border-white/5 rounded-b-xl flex justify-between items-center">
-        <div className="flex items-center gap-2 text-xs text-gray-500">
-          <span className="w-1.5 h-1.5 rounded-full bg-fog animate-pulse"/>
-          <span>AI Moderation Active</span>
+      <div className="px-6 py-4 border-t border-white/5 flex justify-between items-center bg-black/10 rounded-b-xl">
+        <div className="flex items-center gap-2 text-xs text-slate-500">
+          <div className={`w-1.5 h-1.5 rounded-full ${text.length > 0 ? 'bg-green-500 animate-pulse' : 'bg-slate-600'}`} />
+          <span>AI Moderation Ready</span>
         </div>
         
-        <button 
-          onClick={handleSubmit}
-          className="px-6 py-2 bg-fog hover:bg-white text-black font-bold text-sm rounded transition-colors"
-        >
+        <Button onClick={handleSubmit} variant={text.length > 0 ? 'fog' : 'ghost'} disabled={!text.length} size="sm">
           Leave Unfinished
-        </button>
+        </Button>
       </div>
     </div>
   );

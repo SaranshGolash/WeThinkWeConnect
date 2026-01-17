@@ -1,5 +1,6 @@
+// client/tailwind.config.js
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
     content: [
       "./index.html",
       "./src/**/*.{js,ts,jsx,tsx}",
@@ -7,19 +8,31 @@ module.exports = {
     theme: {
       extend: {
         colors: {
-          background: '#0f172a',
-          surface: '#1e293b',
-          primary: '#3b82f6',
+          // The Void (Backgrounds)
+          background: '#050505', // True Black
+          surface: '#0A0A0A',    // Off-Black
+          'surface-highlight': '#121212',
+  
+          // The Neons (Accents)
+          primary: '#6366f1',    // Indigo (Unfinished)
+          secondary: '#ec4899',  // Pink (Echo)
+          accent: '#f59e0b',     // Amber (Conflict)
           
-          // Feature Specific Colors
-          'fog': '#a5b4fc',       // Unfinished (Lavender/Blue)
-          'echo-a': '#2dd4bf',    // Echo User A (Teal)
-          'echo-b': '#fb7185',    // Echo User B (Rose)
-          'conflict': '#f59e0b',  // Middle Ground (Amber)
+          // Text
+          'text-main': '#EDEDED',
+          'text-muted': '#A1A1AA',
         },
         fontFamily: {
-          sans: ['Inter', 'sans-serif'],
-          serif: ['Merriweather', 'serif'], // For the "Deep Thoughts" text
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+          display: ['Space Grotesk', 'Inter', 'sans-serif'], // You can add this font in index.html later if you want
+        },
+        backgroundImage: {
+          'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+          'hero-glow': 'conic-gradient(from 180deg at 50% 50%, #2a2a2a 0deg, #050505 180deg, #2a2a2a 360deg)',
+        },
+        boxShadow: {
+          'neon': '0 0 20px -5px rgba(99, 102, 241, 0.4)',
+          'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.5)',
         }
       },
     },

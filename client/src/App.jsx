@@ -1,33 +1,59 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ROUTES } from './routes';
+
+// Components
+import Navbar from './components/ui/Navbar';
+import Footer from './components/ui/Footer';
+
+// Pages
+import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
+import Dashboard from './pages/Dashboard';
+import NotFound from './pages/NotFound';
+
+// Feature Pages
 import Feed from './features/unfinished/Feed';
 import Lobby from './features/echoSwap/Lobby';
+import SplitScreenSession from './features/echoSwap/SplitScreenSession';
 import ConflictRoom from './features/middleGround/ConflictRoom';
 
 function App() {
   return (
-    <Router>
-      <div className="min-h-screen bg-background text-gray-200 font-sans selection:bg-fog selection:text-black">
-        {/* Navigation */}
-        <nav className="p-4 border-b border-white/10 flex justify-between items-center backdrop-blur-md sticky top-0 z-50">
-          <h1 className="text-2xl font-bold tracking-tighter text-white">
-            WeThinkWeConnect<span className="text-primary">.</span>
-          </h1>
-          <div className="flex gap-6 text-sm font-medium">
-            <Link to="/" className="hover:text-fog transition">Unfinished</Link>
-            <Link to="/echo" className="hover:text-echo-a transition">EchoSwap</Link>
-            <Link to="/conflict" className="hover:text-conflict transition">Middle Ground</Link>
-          </div>
-        </nav>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <div className="min-h-screen bg-background text-gray-200 font-sans selection:bg-fog selection:text-black flex flex-col">
+        
+        {/* Navigation Bar (Always Visible) */}
+        <Navbar />
 
-        {/* Routes */}
-        <div className="container mx-auto p-6 max-w-4xl">
+        {/* Main Content Area */}
+        <main className="flex-grow container mx-auto px-6 py-8 max-w-5xl">
           <Routes>
-            <Route path="/" element={<Feed />} />
-            <Route path="/echo" element={<Lobby />} />
-            <Route path="/conflict" element={<ConflictRoom />} />
+            {/* Public Routes */}
+            <Route path={ROUTES.HOME} element={<LandingPage />} />
+            <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+            <Route path={ROUTES.REGISTER} element={<LoginPage />} />
+
+            {/* Protected/Feature Routes */}
+            <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+            
+            {/* Unfinished Module */}
+            <Route path={ROUTES.UNFINISHED} element={<Feed />} />
+
+            {/* EchoSwap Module */}
+            <Route path={ROUTES.ECHOSWAP} element={<Lobby />} />
+            <Route path={ROUTES.ECHOSWAP_SESSION} element={<SplitScreenSession />} />
+
+            {/* Middle Ground Module */}
+            <Route path={ROUTES.CONFLICT} element={<ConflictRoom />} />
+
+            {/* 404 Not Found */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
-        </div>
+        </main>
+
+        {/* Footer */}
+        <Footer />
       </div>
     </Router>
   );

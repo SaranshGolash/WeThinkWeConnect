@@ -7,6 +7,7 @@ require('dotenv').config();
 // Routes
 const authRoutes = require('./routes/authRoutes');
 const thoughtRoutes = require('./routes/thoughtRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 // Socket Logic
 const socketManager = require('./sockets/socketManager');
@@ -26,7 +27,7 @@ app.use('/api/users', userRoutes);
 // Socket.io Setup
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000", // Allow React Frontend
+        origin: "http://localhost:5173",
         methods: ["GET", "POST"]
     }
 });
@@ -37,5 +38,5 @@ socketManager(io);
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-    console.log(`Continuum Server running on port ${PORT}`);
+    console.log(`WeThinkWeConnect Server running on port ${PORT}`);
 });

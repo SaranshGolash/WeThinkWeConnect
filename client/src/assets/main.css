@@ -1,0 +1,29 @@
+/* client/src/assets/main.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-text-main antialiased;
+    /* This creates the subtle mesh gradient in the background */
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.08), transparent 25%), 
+      radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.08), transparent 25%);
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050505; 
+}
+::-webkit-scrollbar-thumb {
+  background: #333; 
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
