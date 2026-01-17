@@ -21,7 +21,7 @@ app.use(express.json());
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/thoughts', thoughtRoutes);
-// app.use('/api/users', userRoutes); // Add later
+app.use('/api/users', userRoutes);
 
 // Socket.io Setup
 const io = new Server(server, {
