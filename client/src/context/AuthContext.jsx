@@ -1,82 +1,68 @@
-import React, { createContext, useState, useEffect } from 'react';
-import api from '../api/axios'; // Import our configured axios instance
-import { ENDPOINTS } from '../api/endpoints';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
+// 1. Create the Context
 export const AuthContext = createContext();
 
+// 2. Custom Hook for easy usage
+export const useAuth = () => useContext(AuthContext);
+
+// 3. The Provider Component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Check if user is already logged in on app start
+  // Load User from LocalStorage on startup
   useEffect(() => {
-    const checkLoggedIn = async () => {
-      const token = localStorage.getItem('token');
+    const fetchUser = async () => {
+      const token = localStorage.getItem('token'); 
       
-      if (token) {
-        try {
-          // Verify token and get latest profile data
-          const res = await api.get(ENDPOINTS.USERS.PROFILE);
-          setUser(res.data);
-          setIsAuthenticated(true);
-        } catch (err) {
-          console.error("Token invalid or expired");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Validate token with backend
+        const response = await fetch('http://localhost:5000/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        } else {
+          // Token invalid
           localStorage.removeItem('token');
-          setIsAuthenticated(false);
           setUser(null);
         }
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+        localStorage.removeItem('token');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
-    checkLoggedIn();
+    fetchUser();
   }, []);
 
-  const login = async (email, password) => {
-    try {
-      const res = await api.post(ENDPOINTS.AUTH.LOGIN, { email, password });
-      
-      // 1. Save Token
-      localStorage.setItem('token', res.data.token);
-      
-      // 2. Update State
-      setUser(res.data.user);
-      setIsAuthenticated(true);
-      return { success: true };
-    } catch (err) {
-      return { 
-        success: false, 
-        message: err.response?.data || "Login failed" 
-      };
-    }
+  // Login Action (Updates State & Storage)
+  const login = (userData, token) => {
+    localStorage.setItem('token', token);
+    setUser(userData);
   };
 
-  const register = async (username, email, password) => {
-    try {
-      const res = await api.post(ENDPOINTS.AUTH.REGISTER, { username, email, password });
-      localStorage.setItem('token', res.data.token);
-      setUser(res.data.user);
-      setIsAuthenticated(true);
-      return { success: true };
-    } catch (err) {
-      return { 
-        success: false, 
-        message: err.response?.data || "Registration failed" 
-      };
-    }
-  };
-
+  // Logout Action (Clears State & Storage)
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
-    setIsAuthenticated(false);
-    // Optional: Redirect to login handled by components or router
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, register, logout }}>
-      {!loading && children}
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
+      {children}
     </AuthContext.Provider>
   );
 };

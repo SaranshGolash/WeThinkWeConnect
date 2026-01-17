@@ -1,50 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import PostInput from './PostInput';
 import ThoughtCard from './ThoughtCard';
-// import api from '../../api/axios'; // Assumption: axios instance exists
+import api from '../../api/axios';
+import { ENDPOINTS } from '../../api/endpoints';
 
 const Feed = () => {
   const [thoughts, setThoughts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Mock Data Fetch
+  // 1. Fetch thoughts on load
   useEffect(() => {
-    // In real app: const res = await api.get('/thoughts');
-    const mockData = [
-      { id: 1, username: 'saransh', content: 'I feel like we optimize for speed but lose meaning because', created_at: '2023-10-24', continuations: 4 },
-      { id: 2, username: 'dev_guru', content: 'React hooks are great but sometimes I miss classes when', created_at: '2023-10-25', continuations: 12 },
-      { id: 3, username: 'philosopher', content: 'Silence is not empty, it is actually full of', created_at: '2023-10-26', continuations: 8 },
-    ];
-    setThoughts(mockData);
+    const fetchThoughts = async () => {
+      try {
+        const res = await api.get(ENDPOINTS.THOUGHTS.GET_FEED);
+        setThoughts(res.data);
+      } catch (err) {
+        console.error("Failed to fetch feed:", err);
+        setError("Could not load thoughts. Is the server running?");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchThoughts();
   }, []);
 
-  const handleNewPost = (content) => {
-    const newThought = {
-      id: Date.now(),
-      username: 'me', // Replace with Auth Context user
-      content,
-      created_at: new Date().toISOString(),
-      continuations: 0
-    };
-    setThoughts([newThought, ...thoughts]);
+  // 2. Handle the success callback from PostInput
+  const handleNewPost = (newThought) => {
+    // Add the new thought to the TOP of the list immediately
+    setThoughts((prev) => [newThought, ...prev]);
   };
 
+  if (loading) return <div className="text-center py-20 animate-pulse text-text-muted">Gathering unfinished thoughts...</div>;
+  if (error) return <div className="text-center py-20 text-red-400">{error}</div>;
+
   return (
-    <div className="max-w-2xl mx-auto py-8">
-      <div className="mb-12 text-center md:text-left">
-        <h1 className="text-3xl font-bold text-white mb-2">Unfinished Thoughts</h1>
-        <p className="text-gray-400 text-sm">A place where no sentence ever ends.</p>
+    <div className="max-w-2xl mx-auto w-full">
+      <div className="mb-10 text-center md:text-left">
+        <h1 className="text-4xl font-bold text-white mb-2 font-display">
+          Unfinished Feed
+        </h1>
+        <p className="text-text-muted">
+          A stream of consciousness. No conclusions allowed.
+        </p>
       </div>
 
-      <PostInput onSubmit={handleNewPost} />
+      {/* --- FIX: Pass 'onPostSuccess' correctly --- */}
+      <PostInput onPostSuccess={handleNewPost} />
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         {thoughts.map((thought) => (
           <ThoughtCard key={thought.id} thought={thought} />
         ))}
+        
+        {thoughts.length === 0 && (
+          <div className="text-center py-10 text-gray-600 italic">
+            The void is empty. Start a thought above.
+          </div>
+        )}
       </div>
       
-      {/* "Load More" Spacer */}
-      <div className="h-20 flex items-center justify-center text-gray-600 text-sm font-mono mt-10">
+      <div className="h-20 flex items-center justify-center text-gray-700 text-xs font-mono mt-10 uppercase tracking-widest">
         ~ End of known thoughts ~
       </div>
     </div>

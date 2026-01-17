@@ -1,22 +1,20 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext'; 
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import { ROUTES } from '../routes';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login, register, isAuthenticated } = useContext(AuthContext);
+  const { user, login } = useAuth(); 
   
-  // State
   const [isLoginView, setIsLoginView] = useState(true);
   const [formData, setFormData] = useState({ username: '', email: '', password: '' });
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // If already logged in, redirect to dashboard
-  if (isAuthenticated) {
+  if (user) {
     return <Navigate to={ROUTES.DASHBOARD} />;
   }
 
@@ -29,19 +27,42 @@ const LoginPage = () => {
     setError(null);
     setIsLoading(true);
 
-    let result;
-    if (isLoginView) {
-      result = await login(formData.email, formData.password);
-    } else {
-      result = await register(formData.username, formData.email, formData.password);
-    }
+    const endpoint = isLoginView 
+      ? 'http://localhost:5000/api/auth/login' 
+      : 'http://localhost:5000/api/auth/register';
 
-    setIsLoading(false);
+    // ✅ DEBUGGING: Check Console to see exactly what you are sending
+    const payload = {
+      ...( !isLoginView && { username: formData.username }),
+      email: formData.email,
+      password: formData.password
+    };
+    console.log("Sending Payload:", payload);
 
-    if (result.success) {
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // ✅ FIX: Capture the exact error message from backend
+        // Backend might send 'message' or 'error' key
+        throw new Error(data.message || data.error || 'Invalid credentials');
+      }
+
+      console.log("Login Success:", data);
+      login(data.user, data.token);
       navigate(ROUTES.DASHBOARD);
-    } else {
-      setError(result.message);
+
+    } catch (err) {
+      console.error("Login Error:", err);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -49,7 +70,6 @@ const LoginPage = () => {
     <div className="min-h-[80vh] flex items-center justify-center">
       <Card className="w-full max-w-md p-8 border-white/10 shadow-2xl">
         
-        {/* Header */}
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-white mb-2">
             {isLoginView ? 'Welcome Back' : 'Join WeThinkWeConnect'}
@@ -59,24 +79,23 @@ const LoginPage = () => {
           </p>
         </div>
 
-        {/* Error Message */}
         {error && (
-          <div className="bg-red-500/10 border border-red-500/50 text-red-400 text-sm p-3 rounded mb-6 text-center">
-            {typeof error === 'string' ? error : 'An error occurred'}
+          <div className="bg-red-500/10 border border-red-500/50 text-red-400 text-sm p-3 rounded mb-6 text-center animate-pulse">
+            {error}
           </div>
         )}
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           
+          {/* USERNAME FIELD: Visible on Register, hidden on Login */}
           {!isLoginView && (
-            <div>
+            <div className="animate-fade-in-down">
               <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Username</label>
               <input
                 type="text"
                 name="username"
                 required
-                className="w-full bg-black/20 border border-white/10 rounded p-3 text-white focus:border-fog focus:outline-none transition"
+                className="w-full bg-black/20 border border-white/10 rounded p-3 text-white focus:border-fog focus:outline-none"
                 onChange={handleChange}
               />
             </div>
@@ -88,7 +107,7 @@ const LoginPage = () => {
               type="email"
               name="email"
               required
-              className="w-full bg-black/20 border border-white/10 rounded p-3 text-white focus:border-fog focus:outline-none transition"
+              className="w-full bg-black/20 border border-white/10 rounded p-3 text-white focus:border-fog focus:outline-none"
               onChange={handleChange}
             />
           </div>
@@ -99,7 +118,7 @@ const LoginPage = () => {
               type="password"
               name="password"
               required
-              className="w-full bg-black/20 border border-white/10 rounded p-3 text-white focus:border-fog focus:outline-none transition"
+              className="w-full bg-black/20 border border-white/10 rounded p-3 text-white focus:border-fog focus:outline-none"
               onChange={handleChange}
             />
           </div>
@@ -114,12 +133,11 @@ const LoginPage = () => {
           </Button>
         </form>
 
-        {/* Toggle View */}
         <div className="mt-6 text-center text-sm text-gray-500">
           {isLoginView ? "Don't have an account? " : "Already have an account? "}
           <button 
             onClick={() => { setIsLoginView(!isLoginView); setError(null); }}
-            className="text-white underline hover:text-fog"
+            className="text-white underline hover:text-fog transition-colors"
           >
             {isLoginView ? 'Sign up' : 'Log in'}
           </button>

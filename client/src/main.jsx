@@ -5,7 +5,7 @@ import App from './App.jsx'
 // 👇 THIS LINE IS CRITICAL. CHECK THIS PATH.
 import './assets/main.css' 
 
-import { AuthProvider } from './context/AuthContext'
+import { AuthProvider } from './context/AuthContext.jsx'
 import { SocketProvider } from './context/SocketContext'
 
 ReactDOM.createRoot(document.getElementById('root')).render(

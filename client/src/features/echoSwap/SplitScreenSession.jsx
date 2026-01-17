@@ -1,86 +1,104 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import useSocket from '../../hooks/useSocket'; 
 import PerspectiveInput from './PerspectiveInput';
 
 const SplitScreenSession = () => {
   const location = useLocation();
-  // In a real app, this data comes from Socket 'match_found' event
-  const { topic } = location.state || { topic: "Technology creates isolation." };
+  const socket = useSocket(); 
+  
+  // Fallback data
+  const { topic, roomId } = location.state || { topic: "Technology creates isolation.", roomId: "test-room" };
 
-  const [status, setStatus] = useState('active'); // active, waiting_validation, success
-  const [feedback, setFeedback] = useState(null);
+  const [status, setStatus] = useState('active'); 
+  const [aiFeedback, setAiFeedback] = useState(null);
+
+  useEffect(() => {
+    if (!socket) return; 
+
+    socket.on('echo_processing', () => {
+      setStatus('processing');
+      setAiFeedback(null);
+    });
+
+    socket.on('echo_success', () => {
+      setStatus('success');
+    });
+
+    socket.on('echo_failed', (data) => {
+      setStatus('active');
+      setAiFeedback(data.msg);
+    });
+
+    return () => {
+      socket.off('echo_processing');
+      socket.off('echo_success');
+      socket.off('echo_failed');
+    };
+  }, [socket]);
 
   const handlePerspectiveSubmit = (text) => {
-    setStatus('waiting_validation');
-    
-    // Simulate waiting for socket response from opponent
-    setTimeout(() => {
-      // Mocking a successful validation
-      setStatus('success');
-      setFeedback("The other user confirmed you understood them perfectly.");
-    }, 3000);
+    // Double-check: This should rarely fire now because we hide the UI if !socket
+    if (!socket) {
+      console.warn("Socket not ready yet.");
+      return;
+    }
+
+    socket.emit('echo_validate_attempt', { 
+      roomId, 
+      originalBelief: topic, 
+      attemptText: text 
+    });
   };
 
   return (
-    <div className="h-[calc(100vh-140px)] w-full flex rounded-xl overflow-hidden border border-white/10 shadow-2xl relative">
+    <div className="h-[calc(100vh-140px)] w-full flex flex-col md:flex-row rounded-3xl overflow-hidden border border-white/10 shadow-2xl relative bg-black">
       
-      {/* --- LEFT PANEL: THE SUBJECT (THEIR BELIEF) --- */}
-      <div className="w-1/2 bg-surface p-10 flex flex-col justify-center items-center text-center border-r border-white/5 relative overflow-hidden">
-        {/* Decorative Background Text */}
-        <span className="absolute top-4 left-4 text-xs font-bold text-echo-a tracking-[0.3em] opacity-50">
-          TARGET SUBJECT
+      {/* LEFT PANEL */}
+      <div className="md:w-1/2 bg-surface p-10 flex flex-col justify-center items-center text-center border-b md:border-b-0 md:border-r border-white/5 relative">
+        <span className="absolute top-6 left-6 text-xs font-bold text-secondary tracking-[0.3em] opacity-50 uppercase">
+          Target Belief
         </span>
-        
-        <div className="relative z-10">
-          <div className="w-16 h-1 w-16 bg-echo-a mb-6 mx-auto rounded-full" />
-          <h2 className="text-3xl md:text-4xl font-serif text-white leading-tight">
-            "{topic}"
-          </h2>
-          <p className="mt-6 text-gray-400 text-sm">
-            Argue FOR this specific statement. <br/> Do not insert your own opinion yet.
-          </p>
+        <div className="w-16 h-1 bg-gradient-to-r from-secondary to-purple-500 mb-8 rounded-full" />
+        <h2 className="text-3xl md:text-4xl font-display font-bold text-white leading-tight">
+          "{topic}"
+        </h2>
+        <div className="mt-8 px-4 py-2 bg-secondary/10 border border-secondary/20 rounded-full text-secondary text-xs font-bold">
+          Argue FOR this. Do not refute.
         </div>
-
-        {/* Status Indicator for Left Panel */}
-        {status === 'waiting_validation' && (
-          <div className="absolute bottom-10 left-0 w-full text-center animate-pulse text-echo-a text-sm">
-            Waiting for opponent to validate...
-          </div>
-        )}
       </div>
 
-      {/* --- RIGHT PANEL: THE MIRROR (YOUR REWRITE) --- */}
-      <div className="w-1/2 bg-background flex flex-col relative">
-        <span className="absolute top-4 right-4 text-xs font-bold text-echo-b tracking-[0.3em] opacity-50">
-          YOUR MIRROR
+      {/* RIGHT PANEL */}
+      <div className="md:w-1/2 bg-black/50 flex flex-col relative">
+        <span className="absolute top-6 right-6 text-xs font-bold text-primary tracking-[0.3em] opacity-50 uppercase">
+          Your Mirror
         </span>
 
-        {status === 'success' ? (
-          // Success State View
-          <div className="h-full flex flex-col items-center justify-center p-10 bg-green-900/10">
-            <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(34,197,94,0.4)]">
-              <svg className="w-10 h-10 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-              </svg>
+        {/* 1. CHECK SOCKET CONNECTION FIRST */}
+        {!socket ? (
+          <div className="h-full flex flex-col items-center justify-center animate-pulse">
+            <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin mb-4"/>
+            <p className="text-white/50 text-sm tracking-widest uppercase">Connecting to Neural Link...</p>
+          </div>
+        ) : status === 'success' ? (
+          /* 2. SUCCESS STATE */
+          <div className="h-full flex flex-col items-center justify-center p-10 animate-fade-in">
+            <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6 text-green-400 text-4xl shadow-glow-echo">
+              ✓
             </div>
             <h3 className="text-2xl font-bold text-white mb-2">Resonance Achieved</h3>
-            <p className="text-gray-400 text-center">{feedback}</p>
-            <button className="mt-8 px-8 py-3 bg-white text-black font-bold rounded hover:bg-gray-200 transition">
-              Open Chat
-            </button>
+            <p className="text-text-muted text-center max-w-sm">
+              Gemini confirmed your perspective alignment. The chat is now unlocked.
+            </p>
           </div>
         ) : (
-          // Input State View
+          /* 3. INPUT FORM (Only renders if socket exists) */
           <PerspectiveInput 
             onSubmit={handlePerspectiveSubmit} 
-            isSubmitting={status === 'waiting_validation'} 
+            isProcessing={status === 'processing'}
+            aiFeedback={aiFeedback}
           />
         )}
-      </div>
-
-      {/* VS Badge in Center */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-black border border-white/10 rounded-full flex items-center justify-center text-xs font-bold text-gray-500 z-20">
-        VS
       </div>
     </div>
   );

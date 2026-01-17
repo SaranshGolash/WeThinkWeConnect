@@ -1,59 +1,67 @@
-// client/src/components/ui/NavBar.jsx
-import React, { useContext } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
-import { ROUTES } from '../../routes';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+// ✅ FIX: Go up 2 levels (../../) to reach 'src', then into 'context'
+import { useAuth } from '../../context/AuthContext'; 
 
 const Navbar = () => {
-  const { isAuthenticated, logout } = useContext(AuthContext);
-  const location = useLocation();
+  const { user, logout } = useAuth(); 
+  const navigate = useNavigate();
 
-  const isActive = (path) => location.pathname === path;
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-20 flex items-center justify-center pointer-events-none">
-      <div className="w-full max-w-7xl px-6 flex justify-between items-center pointer-events-auto">
-        
-        {/* Brand */}
-        <Link to="/" className="text-xl font-bold tracking-tighter text-white flex items-center gap-2">
-          <div className="w-2 h-2 bg-primary rounded-full shadow-neon" />
-          WeThinkWeConnect
-        </Link>
+    <nav className="fixed top-0 w-full z-50 border-b border-white/10 bg-black/50 backdrop-blur-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20">
+          
+          {/* Logo */}
+          <Link to="/" className="text-2xl font-display font-bold text-white tracking-tighter">
+            WeThink<span className="text-secondary">WeConnect</span>
+          </Link>
 
-        {/* Glass Pill Navigation */}
-        <div className="hidden md:flex items-center gap-1 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full px-2 py-1.5 shadow-glass">
-          <NavLink to={ROUTES.UNFINISHED} active={isActive(ROUTES.UNFINISHED)}>Unfinished</NavLink>
-          <NavLink to={ROUTES.ECHOSWAP} active={isActive(ROUTES.ECHOSWAP)}>EchoSwap</NavLink>
-          <NavLink to={ROUTES.CONFLICT} active={isActive(ROUTES.CONFLICT)}>Conflict</NavLink>
-        </div>
+          {/* Right Side */}
+          <div className="flex items-center gap-6">
+            
+            {user ? (
+              // IF LOGGED IN
+              <>
+                <span className="hidden md:block text-sm text-gray-400">
+                  Hello, {user.username || user.email?.split('@')[0]}
+                </span>
+                
+                <Link 
+                  to="/profile"
+                  className="text-white hover:text-secondary transition text-sm font-bold"
+                >
+                  Dashboard
+                </Link>
 
-        {/* Auth Actions */}
-        <div className="flex items-center gap-4">
-          {isAuthenticated ? (
-            <button onClick={logout} className="text-sm font-medium text-text-muted hover:text-white transition">
-              Log Out
-            </button>
-          ) : (
-            <Link to={ROUTES.LOGIN} className="px-5 py-2 rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition">
-              Log In
-            </Link>
-          )}
+                <button 
+                  onClick={handleLogout}
+                  className="px-6 py-2 bg-white/10 border border-white/20 text-white font-bold rounded-full hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400 transition"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              // IF NOT LOGGED IN
+              <Link 
+                to="/login"
+                className="px-6 py-2 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition"
+              >
+                Login
+              </Link>
+            )}
+            
+          </div>
+
         </div>
       </div>
     </nav>
   );
 };
-
-// Helper for Nav Items
-const NavLink = ({ to, children, active }) => (
-  <Link 
-    to={to} 
-    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${
-      active ? 'bg-white/10 text-white shadow-inner' : 'text-text-muted hover:text-white hover:bg-white/5'
-    }`}
-  >
-    {children}
-  </Link>
-);
 
 export default Navbar;

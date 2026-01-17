@@ -1,10 +1,13 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ROUTES } from './routes';
 
+// Contexts
+import { SocketProvider } from './context/SocketContext';
+
 // Components
-import Navbar from './components/ui/Navbar';
-import Footer from './components/ui/Footer';
+import Layout from './components/Layout';
+import PrivateRoute from './components/PrivateRoute'; 
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -21,40 +24,70 @@ import ConflictRoom from './features/middleGround/ConflictRoom';
 function App() {
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <div className="min-h-screen bg-background text-gray-200 font-sans selection:bg-fog selection:text-black flex flex-col">
-        
-        {/* Navigation Bar (Always Visible) */}
-        <Navbar />
-
-        {/* Main Content Area */}
-        <main className="flex-grow container mx-auto px-6 py-8 max-w-5xl">
+      <SocketProvider>
+        <Layout>
           <Routes>
-            {/* Public Routes */}
+            {/* --- PUBLIC ROUTES --- */}
             <Route path={ROUTES.HOME} element={<LandingPage />} />
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
             <Route path={ROUTES.REGISTER} element={<LoginPage />} />
 
-            {/* Protected/Feature Routes */}
-            <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+            {/* --- PROTECTED ROUTES --- */}
             
-            {/* Unfinished Module */}
-            <Route path={ROUTES.UNFINISHED} element={<Feed />} />
+            {/* Dashboard */}
+            <Route 
+              path={ROUTES.DASHBOARD} 
+              element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              } 
+            />
+            
+            {/* Core Feature 1: Unfinished */}
+            <Route 
+              path={ROUTES.UNFINISHED} 
+              element={
+                <PrivateRoute>
+                  <Feed />
+                </PrivateRoute>
+              } 
+            />
 
-            {/* EchoSwap Module */}
-            <Route path={ROUTES.ECHOSWAP} element={<Lobby />} />
-            <Route path={ROUTES.ECHOSWAP_SESSION} element={<SplitScreenSession />} />
+            {/* Core Feature 2: EchoSwap */}
+            <Route 
+              path={ROUTES.ECHOSWAP} 
+              element={
+                <PrivateRoute>
+                  <Lobby />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path={ROUTES.ECHOSWAP_SESSION} 
+              element={
+                <PrivateRoute>
+                  {/* Now this component can successfully call useSocket() */}
+                  <SplitScreenSession />
+                </PrivateRoute>
+              } 
+            />
 
-            {/* Middle Ground Module */}
-            <Route path={ROUTES.CONFLICT} element={<ConflictRoom />} />
+            {/* Core Feature 3: Middle Ground */}
+            <Route 
+              path={ROUTES.CONFLICT} 
+              element={
+                <PrivateRoute>
+                  <ConflictRoom />
+                </PrivateRoute>
+              } 
+            />
 
-            {/* 404 Not Found */}
+            {/* 404 Route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </main>
-
-        {/* Footer */}
-        <Footer />
-      </div>
+        </Layout>
+      </SocketProvider>
     </Router>
   );
 }

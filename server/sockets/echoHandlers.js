@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const Gemini = require("../utils/gemini");
 
 module.exports = (io, socket) => {
     // Start a Session (Triggered after Matchmaking)
@@ -22,17 +23,23 @@ module.exports = (io, socket) => {
 
     // Validate Perspective
     socket.on('echo_validate_attempt', async (data) => {
-        const { dbId, roomId, perspectiveText, isSuccessful } = data;
+        const { roomId, originalBelief, attemptText } = data;
 
-        if (isSuccessful) {
-            // Update the DB to mark as completed or update transcript
-            await pool.query(
-                "UPDATE swap_sessions SET status = 'completed', transcript = jsonb_set(COALESCE(transcript, '{}'), '{result}', '\"success\"') WHERE id = $1",
-                [dbId]
-            );
-            
+        // 1. Tell UI we are processing
+        io.to(roomId).emit('echo_processing');
+
+        // 2. Ask Gemini
+        const result = await Gemini.validatePerspective(originalBelief, attemptText);
+
+        if (result.pass) {
             io.in(roomId).emit('echo_success', { 
                 msg: "Perspective Aligned. Chat Unlocked." 
+            });
+            // Update DB status here...
+        } else {
+            // Send specific feedback to the user who tried
+            socket.emit('echo_failed', { 
+                msg: result.feedback 
             });
         }
     });

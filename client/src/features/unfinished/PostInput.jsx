@@ -1,52 +1,100 @@
-// client/src/features/unfinished/PostInput.jsx
 import React, { useState } from 'react';
 import Button from '../../components/ui/Button';
+import api from '../../api/axios'; // We call the API directly here to catch errors
+import { ENDPOINTS } from '../../api/endpoints';
 
-const PostInput = ({ onSubmit }) => {
+const PostInput = ({ onPostSuccess }) => {
   const [text, setText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [aiError, setAiError] = useState(null);
 
-  const handleSubmit = () => {
-    if (!text) return;
-    const forbidden = ["conclude", "therefore", "period.", "simple as that"];
-    if (forbidden.some(word => text.toLowerCase().includes(word))) {
-      alert("Let's keep it open-ended. Avoid conclusive words.");
-      return;
+  const handleSubmit = async () => {
+    if (!text.trim()) return;
+    
+    setIsAnalyzing(true);
+    setAiError(null);
+
+    try {
+      // 1. Send to Backend (which calls Gemini)
+      const res = await api.post(ENDPOINTS.THOUGHTS.CREATE, { content: text });
+      
+      // 2. Success!
+      onPostSuccess(res.data);
+      setText("");
+    } catch (err) {
+  console.error("FULL ERROR DETAILS:", err); // <--- Check your Browser Console for this!
+  
+  // improved error extraction
+  let msg = "Something went wrong.";
+  
+  if (err.response) {
+      // The server responded with a status code other than 2xx
+      console.log("Server Data:", err.response.data);
+      console.log("Server Status:", err.response.status);
+      
+      // Handle both { error: "msg" } and plain text responses
+      msg = err.response.data?.error || err.response.data || "Server Error";
+      
+      if (typeof msg === 'object') msg = JSON.stringify(msg);
+  } else if (err.request) {
+      msg = "No response from server. Is the backend running?";
+  } else {
+      msg = err.message;
+  }
+
+  setAiError(msg);
+} finally {
+      setIsAnalyzing(false);
     }
-    onSubmit(text);
-    setText("");
   };
 
   return (
     <div className={`
       relative w-full mb-12 rounded-2xl transition-all duration-500
-      ${isFocused ? 'bg-surface border-fog shadow-glow-fog' : 'bg-surface/30 border-white/5'}
+      ${isFocused ? 'bg-surface border-primary shadow-neon' : 'bg-surface/30 border-white/5'}
+      ${aiError ? 'border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]' : ''}
       border backdrop-blur-sm p-1
     `}>
       <div className="p-6">
-        <label className={`block text-xs font-bold tracking-widest uppercase mb-4 transition-colors ${isFocused ? 'text-fog' : 'text-slate-500'}`}>
-          Open a new loop
+        <label className={`block text-xs font-bold tracking-widest uppercase mb-4 transition-colors ${isFocused ? 'text-primary' : 'text-text-muted'}`}>
+          {aiError ? <span className="text-red-400">AI Moderation Alert</span> : "Open a new loop"}
         </label>
         
         <textarea
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={(e) => { setText(e.target.value); setAiError(null); }}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          className="w-full bg-transparent text-xl md:text-2xl font-serif text-white placeholder-slate-600 focus:outline-none resize-none leading-relaxed"
+          disabled={isAnalyzing}
+          className="w-full bg-transparent text-xl md:text-2xl font-serif text-white placeholder-slate-600 focus:outline-none resize-none leading-relaxed disabled:opacity-50"
           placeholder="I have a feeling that..."
           rows={3}
         />
+        
+        {/* Error Message Display */}
+        {aiError && (
+          <div className="mt-3 text-sm text-red-400 bg-red-500/10 p-3 rounded-lg border border-red-500/20 flex items-center gap-3 animate-fade-in">
+             <span>🚫</span>
+             {aiError}
+          </div>
+        )}
       </div>
 
       <div className="px-6 py-4 border-t border-white/5 flex justify-between items-center bg-black/10 rounded-b-xl">
-        <div className="flex items-center gap-2 text-xs text-slate-500">
-          <div className={`w-1.5 h-1.5 rounded-full ${text.length > 0 ? 'bg-green-500 animate-pulse' : 'bg-slate-600'}`} />
-          <span>AI Moderation Ready</span>
+        <div className="flex items-center gap-2 text-xs text-text-muted">
+          <div className={`w-1.5 h-1.5 rounded-full ${isAnalyzing ? 'bg-primary animate-ping' : 'bg-slate-600'}`} />
+          <span>{isAnalyzing ? "Gemini is analyzing..." : "AI Moderation Ready"}</span>
         </div>
         
-        <Button onClick={handleSubmit} variant={text.length > 0 ? 'fog' : 'ghost'} disabled={!text.length} size="sm">
-          Leave Unfinished
+        <Button 
+          onClick={handleSubmit} 
+          variant={text.length > 0 ? 'primary' : 'secondary'} 
+          disabled={!text.length || isAnalyzing} 
+          size="sm"
+          isLoading={isAnalyzing}
+        >
+          {isAnalyzing ? 'Checking...' : 'Leave Unfinished'}
         </Button>
       </div>
     </div>

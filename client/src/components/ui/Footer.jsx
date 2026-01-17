@@ -13,10 +13,9 @@ const Footer = () => {
           
           {/* BRAND COLUMN */}
           <div className="col-span-1 md:col-span-1">
-            <Link to="/" className="text-xl font-bold tracking-tighter text-white flex items-center gap-2 mb-4">
-              <div className="w-2 h-2 bg-primary rounded-full shadow-neon" />
-              WeThinkWeConnect
-            </Link>
+          <Link to="/" className="text-2xl font-display font-bold text-white tracking-tighter">
+            WeThink<span className="text-secondary">WeConnect</span>
+          </Link>
             <p className="text-text-muted text-sm leading-relaxed">
               The anti-social network designed for incomplete thoughts, radical empathy, and conflict resolution.
             </p>
