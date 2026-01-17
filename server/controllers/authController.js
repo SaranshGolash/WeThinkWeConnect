@@ -19,7 +19,8 @@ exports.register = async (req, res) => {
         );
 
         const token = jwtGenerator(newUser.rows[0].id);
-        res.json({ token, user: newUser.rows[0] });
+        const { password_hash, ...userWithoutPassword } = newUser.rows[0];
+        res.json({ token, user: userWithoutPassword });
 
     } catch (err) {
         console.error(err.message);
@@ -38,8 +39,28 @@ exports.login = async (req, res) => {
         if (!validPassword) return res.status(401).json("Password or Email is incorrect");
 
         const token = jwtGenerator(user.rows[0].id);
-        res.json({ token, user: user.rows[0] });
+        const { password_hash, ...userWithoutPassword } = user.rows[0];
+        res.json({ token, user: userWithoutPassword });
 
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+};
+
+// Get current authenticated user (for session persistence)
+exports.getMe = async (req, res) => {
+    try {
+        const user = await pool.query(
+            "SELECT id, username, email, reputation_score, created_at FROM users WHERE id = $1",
+            [req.user.id]
+        );
+
+        if (user.rows.length === 0) {
+            return res.status(404).json("User not found");
+        }
+
+        res.json(user.rows[0]);
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Server Error");
