@@ -8,6 +8,10 @@ const api = axios.create({
   },
 });
 
+const baseURL = cleanBaseUrl.endsWith('/api') 
+  ? cleanBaseUrl 
+  : `${cleanBaseUrl}/api`;
+
 // Request Interceptor: Attaches Token
 api.interceptors.request.use(
   (config) => {
