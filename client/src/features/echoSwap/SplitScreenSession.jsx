@@ -14,7 +14,13 @@ const SplitScreenSession = () => {
   const [aiFeedback, setAiFeedback] = useState(null);
 
   useEffect(() => {
-    if (!socket) return; 
+    if (!socket || !roomId) return; 
+
+    // Join the room when component mounts
+    socket.emit('join_room', { roomId });
+
+    // Initialize session if not already done
+    socket.emit('echo_start_session', { roomId, topic });
 
     socket.on('echo_processing', () => {
       setStatus('processing');
@@ -30,12 +36,17 @@ const SplitScreenSession = () => {
       setAiFeedback(data.msg);
     });
 
+    socket.on('session_initialized', (data) => {
+      console.log('Session initialized:', data);
+    });
+
     return () => {
       socket.off('echo_processing');
       socket.off('echo_success');
       socket.off('echo_failed');
+      socket.off('session_initialized');
     };
-  }, [socket]);
+  }, [socket, roomId, topic]);
 
   const handlePerspectiveSubmit = (text) => {
     // safe case for socket connection

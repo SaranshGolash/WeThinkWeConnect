@@ -19,6 +19,7 @@ import NotFound from './pages/NotFound';
 import Feed from './features/unfinished/Feed';
 import Lobby from './features/echoSwap/Lobby';
 import SplitScreenSession from './features/echoSwap/SplitScreenSession';
+import ConflictLobby from './features/middleGround/ConflictLobby';
 import ConflictRoom from './features/middleGround/ConflictRoom';
 
 function App() {
@@ -75,6 +76,14 @@ function App() {
             {/* Core Feature 3: Middle Ground */}
             <Route 
               path={ROUTES.CONFLICT} 
+              element={
+                <PrivateRoute>
+                  <ConflictLobby />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path={ROUTES.CONFLICT_SESSION} 
               element={
                 <PrivateRoute>
                   <ConflictRoom />

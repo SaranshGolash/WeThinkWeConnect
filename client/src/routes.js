@@ -7,4 +7,5 @@ export const ROUTES = {
     ECHOSWAP: '/echo',
     ECHOSWAP_SESSION: '/echo/session',
     CONFLICT: '/conflict',
+    CONFLICT_SESSION: '/conflict/session',
   };

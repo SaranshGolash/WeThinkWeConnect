@@ -5,14 +5,11 @@ import App from './App.jsx'
 import './assets/main.css' 
 
 import { AuthProvider } from './context/AuthContext.jsx'
-import { SocketProvider } from './context/SocketContext'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
-      <SocketProvider>
-        <App />
-      </SocketProvider>
+      <App />
     </AuthProvider>
   </React.StrictMode>,
 )
