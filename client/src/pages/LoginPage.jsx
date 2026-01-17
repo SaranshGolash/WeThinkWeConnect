@@ -30,9 +30,10 @@ const LoginPage = () => {
     setError(null);
     setIsLoading(true);
 
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
     const endpoint = isLoginView 
-      ? 'http://localhost:5000/api/auth/login' 
-      : 'http://localhost:5000/api/auth/register';
+      ? `${apiUrl}/auth/login` 
+      : `${apiUrl}/auth/register`;
 
     const payload = {
       ...( !isLoginView && { username: formData.username }),

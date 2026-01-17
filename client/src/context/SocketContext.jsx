@@ -19,7 +19,7 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     if (!user?.id) return; // Wait for user to be loaded
     
-    const URL = 'http://localhost:5000'; 
+    const URL = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'; 
     
     console.log("Initializing Socket Connection to:", URL, "User ID:", user.id);
 
