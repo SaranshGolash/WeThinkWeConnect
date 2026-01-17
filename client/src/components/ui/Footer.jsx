@@ -53,7 +53,7 @@ const Footer = () => {
             <h4 className="text-white font-bold mb-6">Connect</h4>
             <ul className="space-y-4 text-sm text-text-muted">
               <li>
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-2">
+                <a href="https://github.com/SaranshGolash/WeThinkWeConnect" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-2">
                   <span>GitHub</span>
                   <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-white">Open Source</span>
                 </a>
