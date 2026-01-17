@@ -12,6 +12,7 @@ const Feed = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeThread, setActiveThread] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Listen for new thread replies to update continuation counts
   useEffect(() => {
@@ -57,6 +58,17 @@ const Feed = () => {
     setThoughts((prev) => [newThought, ...prev]);
   };
 
+  // Filter thoughts based on search query
+  const filteredThoughts = thoughts.filter((thought) => {
+    if (!searchQuery.trim()) return true;
+    
+    const query = searchQuery.toLowerCase();
+    const content = (thought.content || '').toLowerCase();
+    const username = (thought.username || thought.author?.username || '').toLowerCase();
+    
+    return content.includes(query) || username.includes(query);
+  });
+
   if (loading) return <div className="text-center py-20 animate-pulse text-text-muted">Gathering unfinished thoughts...</div>;
   if (error) return <div className="text-center py-20 text-red-400">{error}</div>;
 
@@ -73,10 +85,51 @@ const Feed = () => {
       
       <PostInput onPostSuccess={handleNewPost} />
 
+      {/* Search Bar */}
+      <div className="mb-6 relative">
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg className="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search thoughts, topics, or users..."
+            className="w-full bg-surface/60 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute inset-y-0 right-0 pr-4 flex items-center text-text-muted hover:text-white transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+        {searchQuery && (
+          <p className="mt-2 text-sm text-text-muted">
+            {filteredThoughts.length === 1 
+              ? `Found 1 thought` 
+              : `Found ${filteredThoughts.length} thoughts`}
+          </p>
+        )}
+      </div>
+
       <div className="space-y-6">
-        {thoughts.map((thought) => (
+        {filteredThoughts.map((thought) => (
           <ThoughtCard key={thought.id} thought={thought} onExtend={() => setActiveThread(thought)}/>
         ))}
+        
+        {filteredThoughts.length === 0 && thoughts.length > 0 && (
+          <div className="text-center py-10 text-gray-600 italic">
+            No thoughts found matching "{searchQuery}". Try a different search term.
+          </div>
+        )}
         
         {thoughts.length === 0 && (
           <div className="text-center py-10 text-gray-600 italic">
