@@ -1,6 +1,7 @@
 const { addToQueue, removeFromQueue } = require('../utils/matchMaker');
 const echoHandlers = require('./echoHandlers');
 const conflictHandlers = require('./conflictHandlers');
+const threadHandlers = require('./threadHandlers');
 const { v4: uuidv4 } = require('uuid');
 
 // Store socket to userId mapping
@@ -61,6 +62,7 @@ module.exports = (io) => {
 
         echoHandlers(io, socket);
         conflictHandlers(io, socket);
+        threadHandlers(io, socket);
 
         socket.on('disconnect', () => {
             removeFromQueue(socket.id);

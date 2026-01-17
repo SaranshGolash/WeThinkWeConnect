@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSocket } from '../../context/SocketContext';
-import { useAuth } from '../../context/AuthContext'; 
+import { useAuth } from '../../context/AuthContext';
+import api from '../../api/axios';
+import { ENDPOINTS } from '../../api/endpoints';
 
 const Icons = {
   X: () => (
@@ -20,7 +22,26 @@ const ThreadExpansion = ({ rootPost, onClose }) => {
   
   const [replyText, setReplyText] = useState("");
   const [threadChain, setThreadChain] = useState([rootPost]);
+  const [loading, setLoading] = useState(true);
 
+  // Load existing continuations from database on mount
+  useEffect(() => {
+    const loadContinuations = async () => {
+      try {
+        const thoughtId = rootPost.id || rootPost._id;
+        const res = await api.get(`/thoughts/${thoughtId}/continuations`);
+        setThreadChain([rootPost, ...res.data]);
+      } catch (err) {
+        console.error("Failed to load continuations:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadContinuations();
+  }, [rootPost]);
+
+  // Listen for new replies via socket
   useEffect(() => {
     if (!socket) return;
 

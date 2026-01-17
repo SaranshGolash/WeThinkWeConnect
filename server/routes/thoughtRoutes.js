@@ -7,4 +7,7 @@ const aiModerator = require("../middleware/aiModerator");
 router.post("/", authMiddleware, aiModerator, thoughtController.createThought);
 router.get("/", thoughtController.getFeed);
 
+// Get continuations for a thought (public endpoint)
+router.get("/:thought_id/continuations", thoughtController.getContinuations);
+
 module.exports = router;

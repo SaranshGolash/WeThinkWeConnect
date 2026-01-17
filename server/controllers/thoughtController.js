@@ -35,12 +35,49 @@ exports.createThought = async (req, res) => {
 exports.getFeed = async (req, res) => {
     try {
         const allThoughts = await pool.query(
-            `SELECT thoughts.*, users.username 
+            `SELECT thoughts.*, users.username, 
+                    COALESCE(continuation_counts.count, 0) as continuations
              FROM thoughts 
              JOIN users ON thoughts.user_id = users.id 
+             LEFT JOIN (
+                 SELECT thought_id, COUNT(*) as count 
+                 FROM continuations 
+                 GROUP BY thought_id
+             ) as continuation_counts ON thoughts.id = continuation_counts.thought_id
              ORDER BY thoughts.created_at DESC`
         );
         res.json(allThoughts.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json("Server Error");
+    }
+};
+
+// Get all continuations for a thought
+exports.getContinuations = async (req, res) => {
+    try {
+        const { thought_id } = req.params;
+
+        const continuations = await pool.query(
+            `SELECT continuations.*, users.username 
+             FROM continuations 
+             JOIN users ON continuations.user_id = users.id 
+             WHERE continuations.thought_id = $1 
+             ORDER BY continuations.id ASC`,
+            [thought_id]
+        );
+
+        const response = continuations.rows.map(row => ({
+            _id: row.id,
+            id: row.id,
+            parentId: row.thought_id,
+            content: row.content,
+            username: row.username,
+            author: { username: row.username },
+            createdAt: row.created_at || row.created_at
+        }));
+
+        res.json(response);
     } catch (err) {
         console.error(err.message);
         res.status(500).json("Server Error");

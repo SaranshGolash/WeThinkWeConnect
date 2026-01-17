@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import useSocket from '../../hooks/useSocket';
 import PostInput from './PostInput';
 import ThoughtCard from './ThoughtCard';
 import api from '../../api/axios';
@@ -6,10 +7,33 @@ import { ENDPOINTS } from '../../api/endpoints';
 import ThreadExpansion from './ThreadExpansion';
 
 const Feed = () => {
+  const socket = useSocket();
   const [thoughts, setThoughts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeThread, setActiveThread] = useState(null);
+
+  // Listen for new thread replies to update continuation counts
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewReply = (replyData) => {
+      const parentId = replyData.parentId;
+      setThoughts((prev) =>
+        prev.map((thought) =>
+          thought.id == parentId || thought._id == parentId
+            ? { ...thought, continuations: (thought.continuations || 0) + 1 }
+            : thought
+        )
+      );
+    };
+
+    socket.on('new_thread_reply', handleNewReply);
+
+    return () => {
+      socket.off('new_thread_reply', handleNewReply);
+    };
+  }, [socket]);
 
   // Fetches thoughts on load
   useEffect(() => {
