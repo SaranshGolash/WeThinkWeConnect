@@ -19,6 +19,6 @@ router.get("/:username", userController.getPublicProfile);
 
 
 router.get('/stats', authMiddleware, userController.getProfileStats);
-router.get('/mine', auth, thoughtController.getMyThoughts);
+router.get('/mine', authMiddleware, thoughtController.getMyThoughts);
 
 module.exports = router;
