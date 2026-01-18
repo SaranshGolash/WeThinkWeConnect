@@ -25,9 +25,12 @@ const Dashboard = () => {
         const statsRes = await api.get('/users/stats');
         setStats(statsRes.data);
 
-        // Optional: Fetch recent activity here if you have endpoints for it
-        // const thoughtsRes = await api.get('/thoughts/mine'); 
-        // setDashboardData(prev => ({ ...prev, myThoughts: thoughtsRes.data }));
+        //Fetch User's Recent Thoughts
+        const thoughtsRes = await api.get('/thoughts/mine'); 
+        setDashboardData(prev => ({ 
+            ...prev, 
+            myThoughts: thoughtsRes.data 
+        }));
 
       } catch (err) {
         console.error("Failed to load dashboard data", err);

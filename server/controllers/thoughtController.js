@@ -33,6 +33,25 @@ exports.createThought = async (req, res) => {
     }
 };
 
+exports.getMyThoughts = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        
+        const myThoughts = await pool.query(
+            `SELECT * FROM thoughts 
+             WHERE user_id = $1 
+             ORDER BY created_at DESC 
+             LIMIT 3`,
+            [userId]
+        );
+
+        res.json(myThoughts.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+};
+
 // Get feed of unfinished thoughts
 exports.getFeed = async (req, res) => {
     try {
