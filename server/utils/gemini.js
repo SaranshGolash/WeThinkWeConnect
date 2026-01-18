@@ -4,6 +4,7 @@ require("dotenv").config();
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-3-pro-preview" });
+const fasterModel = genAI.getGenerativeModel({model : "gemini-3-flash-preview"});
 
 const Gemini = {
   // UNFINISHED: Checks if a sentence is "open-ended"
@@ -57,7 +58,7 @@ const Gemini = {
         Do not include numbering or labels.
       `;
 
-      const result = await model.generateContent(prompt);
+      const result = await fasterModel.generateContent(prompt);
       const response = await result.response;
       const text = response.text().trim();
 
