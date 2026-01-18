@@ -91,7 +91,7 @@ const Dashboard = () => {
             )}
             
             <Link 
-                to="/feed" 
+                to="/unfinished" 
                 className="block w-full text-center py-2 text-sm border border-white/10 rounded-lg hover:bg-white/5 text-gray-300 transition-colors"
             >
                 View Feed
