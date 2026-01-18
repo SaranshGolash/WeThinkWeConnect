@@ -15,15 +15,15 @@ const LandingPage = () => {
         </div>
         
         <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-none">
-          Thinking,<br/>
+          Half-Baked Thoughts<br/>
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-purple-400 to-secondary">
-            Unfinished.
+            Unsettled Disputes
           </span>
         </h1>
         
         <p className="text-lg md:text-xl text-text-muted max-w-2xl leading-relaxed">
           The anti-social network. No likes. No conclusions. <br/>
-          Just a continuum of raw thoughts and radical empathy.
+          Just a chain of raw thoughts, radical empathy and cold wars in form of discussions.
         </p>
 
         <div className="flex flex-wrap justify-center gap-4 mt-4">
