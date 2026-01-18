@@ -39,7 +39,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="min-h-screen pb-20 px-4 md:px-8 max-w-6xl mx-auto animate-fade-in">
+    <div className="w-full pb-8 px-4 md:px-8 max-w-6xl mx-auto animate-fade-in">
       
       {/* --- Header --- */}
       <div className="flex justify-between items-end pt-12 mb-12 border-b border-white/10 pb-6">
@@ -177,7 +177,6 @@ const Dashboard = () => {
           "You are building bridges in a digital world."
         </p>
       </div>
-
     </div>
   );
 };
