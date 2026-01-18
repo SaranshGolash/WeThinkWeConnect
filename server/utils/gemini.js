@@ -41,7 +41,7 @@ const Gemini = {
     }
   },
 
-  ggenerateSparks: async (content) => {
+  generateSparks: async (content) => {
     try {
       const prompt = `
         The user is writing a poetic, unfinished thought: "${content}".
