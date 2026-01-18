@@ -32,7 +32,7 @@ function ThoughtCard ({ thought, onExtend, onMoodClick }) {
   // Navigate to EchoSwap
   const handleEcho = (e) => {
     e.stopPropagation();
-    navigate('/echoswap', { 
+    navigate('/echo', { 
       state: { starterThought: thought.content } 
     });
   };

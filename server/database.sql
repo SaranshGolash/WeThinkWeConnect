@@ -49,3 +49,8 @@ CREATE TABLE conflict_rooms (
 );
 
 ALTER TABLE thoughts ADD COLUMN mood VARCHAR(50) DEFAULT 'Neutral';
+
+-- Before implementing OAuth
+ALTER TABLE users ALTER COLUMN password DROP NOT NULL;
+ALTER TABLE users ADD COLUMN google_id VARCHAR(255) UNIQUE;
+ALTER TABLE users ADD COLUMN avatar_url TEXT;
