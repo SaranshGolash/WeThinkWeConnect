@@ -73,7 +73,7 @@ exports.getSparks = async (req, res) => {
         }
 
         const suggestions = await Gemini.generateSparks(content);
-        res.json({ suggestions });
+        res.json({ suggestions: suggestions });
 
     } catch (err) {
         console.error(err.message);

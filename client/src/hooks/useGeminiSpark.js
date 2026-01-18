@@ -19,7 +19,12 @@ const useGeminiSpark = () => {
     try {
       // Re-using the same backend endpoint
       const res = await api.post('/thoughts/spark', { content: text });
-      setSuggestions(res.data.suggestions);
+      console.log("Spark API Response:", res.data);
+      if (res.data.suggestions && Array.isArray(res.data.suggestions)) {
+        setSuggestions(res.data.suggestions);
+      } else {
+        console.warn("Unexpected response format:", res.data);
+      }
     } catch (err) {
       console.error("Spark Error:", err);
       setError("AI is taking a nap. Try again.");
