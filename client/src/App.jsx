@@ -14,7 +14,6 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
-import Profile from './pages/Profile';
 
 // Feature Pages
 import Feed from './features/unfinished/Feed';
@@ -42,7 +41,6 @@ function App() {
               element={
                 <PrivateRoute>
                   <Dashboard />
-                  <Profile />
                 </PrivateRoute>
               } 
             />
