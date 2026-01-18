@@ -7,39 +7,66 @@ const PostInput = ({ onPostSuccess }) => {
   const [text, setText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isSparking, setIsSparking] = useState(false);
   const [aiError, setAiError] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
 
   const handleSubmit = async () => {
     if (!text.trim()) return;
     
     setIsAnalyzing(true);
     setAiError(null);
+    setSuggestions([]); // Clear suggestions on submit
 
     try {
       const res = await api.post(ENDPOINTS.THOUGHTS.CREATE, { content: text });
       onPostSuccess(res.data);
       setText("");
     } catch (err) {
-  console.error("FULL ERROR DETAILS:", err);
-  
-  let msg = "Something went wrong.";
-  
-  if (err.response) {
-      console.log("Server Data:", err.response.data);
-      console.log("Server Status:", err.response.status);
+      console.error("FULL ERROR DETAILS:", err);
       
-      msg = err.response.data?.error || err.response.data || "Server Error";
-      if (typeof msg === 'object') msg = JSON.stringify(msg);
-  } else if (err.request) {
-      msg = "No response from server. Is the backend running?";
-  } else {
-      msg = err.message;
-  }
+      let msg = "Something went wrong.";
+      
+      if (err.response) {
+          msg = err.response.data?.error || err.response.data || "Server Error";
+          if (typeof msg === 'object') msg = JSON.stringify(msg);
+      } else if (err.request) {
+          msg = "No response from server. Is the backend running?";
+      } else {
+          msg = err.message;
+      }
 
-  setAiError(msg);
-} finally {
+      setAiError(msg);
+    } finally {
       setIsAnalyzing(false);
     }
+  };
+
+  const handleSpark = async () => {
+    if (text.length < 5) {
+        alert("Type at least 5 characters to get a spark!");
+        return;
+    }
+    
+    setIsSparking(true);
+    setSuggestions([]);
+
+    try {
+        // Sending { content: text } because backend expects 'content' key
+        const res = await api.post('/thoughts/spark', { content: text });
+        setSuggestions(res.data.suggestions);
+    } catch (err) {
+        console.error(err);
+    } finally {
+        setIsSparking(false);
+    }
+  };
+
+  const applySuggestion = (suggestion) => {
+    // Add a space if missing
+    const separator = text.endsWith(' ') ? '' : ' ';
+    setText(text + separator + suggestion);
+    setSuggestions([]); // Clear after picking
   };
 
   return (
@@ -56,7 +83,11 @@ const PostInput = ({ onPostSuccess }) => {
         
         <textarea
           value={text}
-          onChange={(e) => { setText(e.target.value); setAiError(null); }}
+          onChange={(e) => { 
+              setText(e.target.value); 
+              setAiError(null); 
+              if(suggestions.length > 0) setSuggestions([]); // Clear suggestions if user types manually
+          }}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           disabled={isAnalyzing}
@@ -64,6 +95,23 @@ const PostInput = ({ onPostSuccess }) => {
           placeholder="I have a feeling that..."
           rows={3}
         />
+
+        {/* Suggestions Area */}
+        {suggestions.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4 animate-fade-in-up">
+              <span className="text-xs text-secondary font-bold w-full uppercase tracking-wider mb-1">Gemini Sparks:</span>
+              {suggestions.map((s, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => applySuggestion(s)}
+                    className="text-xs text-left bg-white/5 hover:bg-primary/20 hover:text-primary border border-white/10 rounded-lg px-3 py-2 transition-all"
+                  >
+                      "{s}..."
+                  </button>
+              ))}
+          </div>
+        )}
         
         {/* Error Message Display */}
         {aiError && (
@@ -75,9 +123,26 @@ const PostInput = ({ onPostSuccess }) => {
       </div>
 
       <div className="px-6 py-4 border-t border-white/5 flex justify-between items-center bg-black/10 rounded-b-xl">
-        <div className="flex items-center gap-2 text-xs text-text-muted">
-          <div className={`w-1.5 h-1.5 rounded-full ${isAnalyzing ? 'bg-primary animate-ping' : 'bg-slate-600'}`} />
-          <span>{isAnalyzing ? "Gemini is analyzing..." : "AI Moderation Ready"}</span>
+        
+        {/* Left Side: Status + Spark Button */}
+        <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-xs text-text-muted">
+                <div className={`w-1.5 h-1.5 rounded-full ${isAnalyzing ? 'bg-primary animate-ping' : 'bg-slate-600'}`} />
+                <span className="hidden sm:inline">{isAnalyzing ? "Gemini is analyzing..." : "AI Ready"}</span>
+            </div>
+            <button
+                type="button"
+                onClick={handleSpark}
+                disabled={isSparking || !text.trim() || isAnalyzing}
+                className={`flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-all
+                    ${isSparking ? 'text-primary animate-pulse' : 'text-gray-400 hover:text-primary'}`}
+            >
+                {isSparking ? (
+                     <>Running AI...</> 
+                ) : (
+                     <><span className="text-lg">✨</span> Spark</>
+                )}
+            </button>
         </div>
         
         <Button 

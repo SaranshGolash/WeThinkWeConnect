@@ -41,6 +41,36 @@ const Gemini = {
     }
   },
 
+  ggenerateSparks: async (content) => {
+    try {
+      const prompt = `
+        The user is writing a poetic, unfinished thought: "${content}".
+        
+        Generate 3 different short continuations (max 10 words each) that complete the current sentence but leave the thought OPEN-ENDED.
+        
+        1. Melancholic/Sad style.
+        2. Hopeful/Light style.
+        3. Abstract/Dark style.
+        
+        Return ONLY the 3 phrases separated by a pipe symbol "|". 
+        Example output: and the rain never stopped|but the sun might rise tomorrow|into the void of silence
+        Do not include numbering or labels.
+      `;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text().trim();
+      
+      // Split by pipe to get array
+      const suggestions = text.split('|').map(s => s.trim());
+      return suggestions;
+
+    } catch (error) {
+      console.error("Gemini Spark Error:", error);
+      return []; 
+    }
+  },
+
   analyzeSentiment: async (content) => {
     try {
       const prompt = `

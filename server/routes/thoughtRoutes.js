@@ -10,4 +10,6 @@ router.get("/", thoughtController.getFeed);
 // Get continuations for a thought (public endpoint)
 router.get("/:thought_id/continuations", thoughtController.getContinuations);
 
+router.post('/spark', authMiddleware, thoughtController.getSparks);
+
 module.exports = router;

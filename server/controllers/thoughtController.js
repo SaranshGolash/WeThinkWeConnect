@@ -65,6 +65,22 @@ exports.getFeed = async (req, res) => {
     }
 };
 
+exports.getSparks = async (req, res) => {
+    try {
+        const { content } = req.body;
+        if (!content || content.length < 5) {
+            return res.status(400).json({ error: "Type a bit more first..." });
+        }
+
+        const suggestions = await Gemini.generateSparks(content);
+        res.json({ suggestions });
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+};
+
 // Get all continuations for a thought
 exports.getContinuations = async (req, res) => {
     try {
