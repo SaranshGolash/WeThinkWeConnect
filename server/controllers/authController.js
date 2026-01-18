@@ -31,12 +31,16 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log("Email: ", email ,"Password: ", password);
         const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
 
-        if (user.rows.length === 0) return res.status(401).json("Password or Email is incorrect");
+        if (user.rows.length === 0) {console.log("Email not in database"); return res.status(401).json("Password or Email is incorrect");}
+
+        console.log("User found", user.rows[0].username);
+        console.log("stored hash", user.rows[0].password);
 
         const validPassword = await bcrypt.compare(password, user.rows[0].password_hash);
-        if (!validPassword) return res.status(401).json("Password or Email is incorrect");
+        if (!validPassword) {console.log("Password did not match"); return res.status(401).json("Password or Email is incorrect");}
 
         const token = jwtGenerator(user.rows[0].id);
         const { password_hash, ...userWithoutPassword } = user.rows[0];

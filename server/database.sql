@@ -47,3 +47,5 @@ CREATE TABLE conflict_rooms (
     current_distance INT DEFAULT 100,
     status VARCHAR(20) DEFAULT 'negotiating'
 );
+
+ALTER TABLE thoughts ADD COLUMN mood VARCHAR(50) DEFAULT 'Neutral';

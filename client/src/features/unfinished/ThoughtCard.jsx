@@ -3,10 +3,23 @@ import React from 'react';
 const ThoughtCard = ({ thought, onExtend }) => {
   console.log("Thought Data:", thought);
   const username = thought.author?.username || thought.username || "Anonymous";
+  console.log("Mood:", thought.mood);
+  const mood = thought.mood || "Neutral";
   const initial = username.charAt(0).toUpperCase();
   const dateDisplay = thought.created_at 
     ? new Date(thought.created_at).toLocaleDateString() 
     : "Just now";
+
+  const getMoodColor = (m) => {
+    switch(m) {
+      case 'Melancholic': return 'text-blue-400 border-blue-400/30 bg-blue-400/10';
+      case 'Hopeful': return 'text-yellow-400 border-yellow-400/30 bg-yellow-400/10';
+      case 'Dark': return 'text-gray-500 border-gray-500/30 bg-gray-500/10';
+      case 'Romantic': return 'text-pink-400 border-pink-400/30 bg-pink-400/10';
+      case 'Whimsical': return 'text-purple-400 border-purple-400/30 bg-purple-400/10';
+      default: return 'text-gray-400 border-gray-400/30 bg-gray-400/10';
+    }
+  }
 
   return (
     <div className="group relative pl-8 py-2">
@@ -29,6 +42,9 @@ const ThoughtCard = ({ thought, onExtend }) => {
             <span className="text-[10px] text-text-muted px-2 py-0.5 border border-white/5 rounded-full">
               {dateDisplay}
             </span>
+            <span className={`text-[10px] px-2 py-0.5 rounded-full border uppercase tracking-wider ${getMoodColor(mood)}`}>
+               {mood}
+             </span>
           </div>
 
           {/* The Thought */}

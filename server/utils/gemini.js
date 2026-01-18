@@ -41,6 +41,31 @@ const Gemini = {
     }
   },
 
+  analyzeSentiment: async (content) => {
+    try {
+      const prompt = `
+        Analyze the sentiment and emotional tone of this unfinished thought: "${content}".
+        
+        Return ONLY a single word from this list: 
+        [Melancholic, Hopeful, Cynical, Curious, Neutral, Abstract, Whimsical, Dark, Romantic].
+        
+        If it doesn't fit well, default to "Neutral". Do not write any other text.
+      `;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      let mood = response.text().trim();
+
+      // Cleanup: Removes any accidental extra chars
+      mood = mood.replace(/[^a-zA-Z]/g, ""); 
+      
+      return mood || "Neutral";
+    } catch (error) {
+      console.error("Gemini Sentiment Error:", error);
+      return "Neutral";
+    }
+  },
+
   // ECHOSWAP: Validates perspective taking
   validatePerspective: async (originalBelief, attemptedRewrite) => {
     if (!process.env.GEMINI_API_KEY) return { pass: true };
