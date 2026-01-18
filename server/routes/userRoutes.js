@@ -18,6 +18,6 @@ router.get("/dashboard", authMiddleware, userController.getDashboard);
 router.get("/:username", userController.getPublicProfile);
 
 
-router.get('/stats', auth, userController.getProfileStats);
+router.get('/stats', authMiddleware, userController.getProfileStats);
 
 module.exports = router;
