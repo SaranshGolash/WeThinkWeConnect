@@ -1,7 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function ThoughtCard ({ thought, onExtend, onMoodClick }) {
-  
+  const navigate = useNavigate();
   const username = thought.author?.username || thought.username || "Anonymous";
   const mood = thought.mood || "Neutral";
   const initial = username.charAt(0).toUpperCase();
@@ -19,6 +20,22 @@ function ThoughtCard ({ thought, onExtend, onMoodClick }) {
       default: return 'text-gray-400 border-gray-400/30 bg-gray-400/10';
     }
   }
+
+  // Navigate to Conflict
+  const handleChallenge = (e) => {
+    e.stopPropagation();
+    navigate('/conflict', { 
+      state: { prefilledTopic: thought.content } 
+    });
+  };
+
+  // Navigate to EchoSwap
+  const handleEcho = (e) => {
+    e.stopPropagation();
+    navigate('/echoswap', { 
+      state: { starterThought: thought.content } 
+    });
+  };
 
   return (
     <div className="group relative pl-8 py-2">
@@ -67,6 +84,24 @@ function ThoughtCard ({ thought, onExtend, onMoodClick }) {
               <span>Extend Thread</span>
               <span className="bg-black/30 px-1.5 rounded text-[10px]">{thought.continuations || 0}</span>
             </button>
+            {/* Bridge to other UseCases/Features */}
+            <div className="flex gap-4">
+               <button 
+                 onClick={handleChallenge}
+                 className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 hover:underline transition-all"
+                 title="Take this to the Conflict Room"
+               >
+                 <span>⚔️</span> Challenge
+               </button>
+
+               <button 
+                 onClick={handleEcho}
+                 className="flex items-center gap-1.5 text-xs text-secondary hover:text-cyan-300 hover:underline transition-all"
+                 title="Swap perspectives in Echo Room"
+               >
+                 <span>👁️</span> Echo
+               </button>
+            </div>
           </div>
         </div>
       </div>
