@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const userController = require("../controllers/userController");
 const authMiddleware = require("../middleware/authMiddleware");
+const thoughtController = require("../controllers/thoughtController");
 
 // @route   GET /api/users/profile
 // @desc    Get logged-in user's details
