@@ -42,6 +42,7 @@ function App() {
               element={
                 <PrivateRoute>
                   <Dashboard />
+                  <Profile />
                 </PrivateRoute>
               } 
             />
@@ -52,7 +53,6 @@ function App() {
               element={
                 <PrivateRoute>
                   <Feed />
-                  <Profile />
                 </PrivateRoute>
               } 
             />
