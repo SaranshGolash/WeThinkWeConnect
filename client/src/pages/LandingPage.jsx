@@ -11,7 +11,7 @@ const LandingPage = () => {
       {/* Hero Section */}
       <section className="text-center flex flex-col items-center justify-center gap-8 pt-10 animate-fade-in">
         <div className="inline-block px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-xs font-mono tracking-widest text-primary uppercase mb-4">
-          v1.0 Beta Live
+          v1.0 Live
         </div>
         
         <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-none">
