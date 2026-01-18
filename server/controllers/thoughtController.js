@@ -16,7 +16,7 @@ exports.createThought = async (req, res) => {
         const mood = await Gemini.analyzeSentiment(content);
 
         const newThought = await pool.query(
-            "INSERT INTO thoughts (user_id, content) VALUES ($1, $2, $3) RETURNING *",
+            "INSERT INTO thoughts (user_id, content, mood) VALUES ($1, $2, $3) RETURNING *",
             [req.user.id, content, mood]
         );
 
