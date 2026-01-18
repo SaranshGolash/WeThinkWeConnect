@@ -88,3 +88,39 @@ exports.getPublicProfile = async (req, res) => {
         res.status(500).send("Server Error");
     }
 };
+
+exports.getProfileStats = async (req, res) => {
+    try {
+      const userId = req.user.id;
+  
+      // Vulnerability: Count of Unfinished Thoughts posted
+      const thoughts = await pool.query(
+        "SELECT COUNT(*) FROM thoughts WHERE user_id = $1", 
+        [userId]
+      );
+  
+      // Empathy: Count of Echoes/Continuations written
+      const echoes = await pool.query(
+        "SELECT COUNT(*) FROM continuations WHERE user_id = $1", 
+        [userId]
+      );
+  
+      // Diplomat: Count of Conflict Sessions joined
+      const conflicts = await pool.query(
+        "SELECT COUNT(*) FROM conflict_sessions WHERE user1_id = $1 OR user2_id = $1", 
+        [userId]
+      );
+  
+      const stats = {
+        vulnerability: parseInt(thoughts.rows[0].count),
+        empathy: parseInt(echoes.rows[0].count),
+        diplomat: parseInt(conflicts.rows[0].count || 0)
+      };
+  
+      res.json(stats);
+  
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server Error");
+    }
+  };

@@ -17,4 +17,7 @@ router.get("/dashboard", authMiddleware, userController.getDashboard);
 // @access  Public
 router.get("/:username", userController.getPublicProfile);
 
+
+router.get('/stats', auth, userController.getProfileStats);
+
 module.exports = router;
