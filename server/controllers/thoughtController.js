@@ -36,18 +36,28 @@ exports.createThought = async (req, res) => {
 // Get feed of unfinished thoughts
 exports.getFeed = async (req, res) => {
     try {
-        const allThoughts = await pool.query(
-            `SELECT thoughts.*, users.username, 
-                    COALESCE(continuation_counts.count, 0) as continuations
-             FROM thoughts 
-             JOIN users ON thoughts.user_id = users.id 
-             LEFT JOIN (
-                 SELECT thought_id, COUNT(*) as count 
-                 FROM continuations 
-                 GROUP BY thought_id
-             ) as continuation_counts ON thoughts.id = continuation_counts.thought_id
-             ORDER BY thoughts.created_at DESC`
-        );
+        const {mood} = req.query;
+        const params = [];
+
+        let query = `
+            SELECT t.*, u.username, 
+                   COALESCE(c_counts.count, 0) as continuations 
+            FROM thoughts t 
+            JOIN users u ON t.user_id = u.id 
+            LEFT JOIN (
+                SELECT thought_id, COUNT(*) as count 
+                FROM continuations 
+                GROUP BY thought_id
+            ) as c_counts ON t.id = c_counts.thought_id
+        `;
+
+        if (mood && mood !== 'All') {
+            query += ` WHERE t.mood = $1`;
+            params.push(mood);
+        }
+
+        query += ` ORDER BY t.created_at DESC`;
+        const allThoughts = await pool.query(query, params);
         res.json(allThoughts.rows);
     } catch (err) {
         console.error(err.message);

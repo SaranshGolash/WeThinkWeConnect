@@ -1,9 +1,8 @@
 import React from 'react';
 
-const ThoughtCard = ({ thought, onExtend }) => {
-  console.log("Thought Data:", thought);
+function ThoughtCard ({ thought, onExtend, onMoodClick }) {
+  
   const username = thought.author?.username || thought.username || "Anonymous";
-  console.log("Mood:", thought.mood);
   const mood = thought.mood || "Neutral";
   const initial = username.charAt(0).toUpperCase();
   const dateDisplay = thought.created_at 
@@ -42,9 +41,18 @@ const ThoughtCard = ({ thought, onExtend }) => {
             <span className="text-[10px] text-text-muted px-2 py-0.5 border border-white/5 rounded-full">
               {dateDisplay}
             </span>
-            <span className={`text-[10px] px-2 py-0.5 rounded-full border uppercase tracking-wider ${getMoodColor(mood)}`}>
+            
+            <button 
+              onClick={(e) => {
+                e.stopPropagation(); // Prevents triggering parent clicks
+                if (onMoodClick) onMoodClick(mood);
+              }}
+              className={`text-[10px] px-2 py-0.5 rounded-full border uppercase tracking-wider 
+                hover:opacity-80 hover:scale-105 transition-all cursor-pointer ${getMoodColor(mood)}`}
+            >
                {mood}
-             </span>
+             </button>
+
           </div>
 
           {/* The Thought */}
