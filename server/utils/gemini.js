@@ -60,10 +60,12 @@ const Gemini = {
       const result = await model.generateContent(prompt);
       const response = await result.response;
       const text = response.text().trim();
+
+      console.log("Text: ", text);
       
       // Split by pipe to get array
       const suggestions = text.split('|').map(s => s.trim());
-      return suggestions;
+      return suggestions.slice(0, 3);
 
     } catch (error) {
       console.error("Gemini Spark Error:", error);
